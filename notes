@@ -1,0 +1,42 @@
+* Who we are & what we do. Who i am
+  - TBD, chat with others what content
+* Placing orders in the market (why!), why speed important
+* FIX message:
+  - 9=FIX4.2|blah|blah|blah|footer
+  - Basically it's ASCII
+* Strawman code
+std::string newOrder(int product, int price, int quantity) {
+  ostrstring s;
+  s << "9=FIX4.2" << sep 
+    << "blah" << sep;
+  return s.str();
+}
+  - Timings! 1.2us / record ! yay
+* So what all is going on there?
+  - perf? ask the audience?
+  - Memory alloc? Try sprintf
+* sprintf version
+  - 330ns/iter
+  - profile shows hotspots in vfprintf and itoa_word, source?
+  - disassembly?
+  - dependency chain?
+* Can we do better?
+  - itoa?
+
+  - How to send quickly?
+* How quick is quick? Let's measure. focus on itoa
+  - ostream version -> 1850 clocks (on my laptop, 0.8us)
+  - printf into buffer -> 328 clocks
+  - fastFormat -> 84 clks (with reversal)
+  - fastFormatFixed -> 64 clks (no reversal)
+  ...with even faster code ~40clks
+
+* Any questions? We're hiring, come chat with me...
+
+----
+
+Non-slide notes.
+* It's probably possible to speed up non-fixed case with log10 and then a per-log10 routine.
+* log10 can be found with "count leading zero" instruction and a small lookup table
+  * or even using a parallel divide (mult by recip) and then CLZ to find not only the answer
+    but the number of 0s at front

@@ -1,0 +1,9 @@
+*.o
+bin/
+core
+*.swp
+perf.*
+gmon.*
+.gdb_history
+gdb.txt
+perf.*
