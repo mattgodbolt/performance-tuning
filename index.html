@@ -6,16 +6,18 @@
 
     <title>Performance Tuning</title>
 
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
-    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="reveal.js/dist/reset.css">
+    <link rel="stylesheet" href="reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="reveal.js/dist/theme/league.css">
 
     <!-- Code syntax highlighting -->
-    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="reveal.js/plugin/highlight/zenburn.css">
 
     <!-- Printing and PDF exports -->
     <script>
@@ -28,15 +30,15 @@
 
     <style>
         .soh {
-            color: rgba(27, 145, 255, 0.42);
+            color: rgba(27, 145, 255);
         }
 
         .fix-key {
-            color: #03330c;
+            color: #118626;
         }
 
         .fix-value {
-            color: #1f1f1f;
+            color: #7e7b7b;
         }
     </style>
 
@@ -47,36 +49,36 @@
 
 <body>
 
-<div class="reveal">
+    <div class="reveal">
 
-    <div class="slides">
-        <section>
-            <h1>Performance Tuning</h1>
+        <div class="slides">
+            <section>
+                <h1>Performance Tuning</h1>
 
-            <em>There's no such thing as the fastest code...</em>
-        </section>
+                <em>There's no such thing as the fastest code...</em>
+            </section>
 
-        <section>
-            <h2>About Me</h2>
+            <section>
+                <h2>About Me</h2>
 
-            <ul>
-                <li>Matt Godbolt</li>
-                <li>@mattgodbolt matt@godbolt.org</li>
-                <li>Trading for 11 years</li>
-                <li>Ex-Google, ex-games industry</li>
-            </ul>
-        </section>
+                <ul>
+                    <li>Matt Godbolt</li>
+                    <li>@mattgodbolt matt@godbolt.org</li>
+                    <li>Trading for 11 years</li>
+                    <li>Ex-Google, ex-games industry</li>
+                </ul>
+            </section>
 
-        <section>
-            <h2>Placing Orders</h2>
-            <ul>
-                <li>Many exchanges use FIX protocol</li>
-                <li>ASCII <code>KEY=VALUE</code> pairs</li>
-                <li>Separated by <code>SOH</code> byte (<code>'␁' / '\x01'</code>)</li>
-                <li>Not very efficient</li>
-                <li>Requires several binary-to-decimal conversions</li>
-            </ul>
-            <pre><span class="fix-key">8</span>=<span class="fix-value">FIX.4.2</span><span class="soh">␁</span><span
+            <section>
+                <h2>Placing Orders</h2>
+                <ul>
+                    <li>Many exchanges use FIX protocol</li>
+                    <li>ASCII <code>KEY=VALUE</code> pairs</li>
+                    <li>Separated by <code>SOH</code> byte (<code>'␁' / '\x01'</code>)</li>
+                    <li>Not very efficient</li>
+                    <li>Requires several binary-to-decimal conversions</li>
+                </ul>
+                <pre><span class="fix-key">8</span>=<span class="fix-value">FIX.4.2</span><span class="soh">␁</span><span
                     class="fix-key">9</span>=<span class="fix-value">230</span><span class="soh">␁</span><span
                     class="fix-key">35</span>=<span class="fix-value">D</span><span class="soh">␁</span><span
                     class="fix-key">34</span>=<span class="fix-value">000000698</span><span class="soh">␁</span><span
@@ -103,33 +105,33 @@
                     class="fix-key">7928</span>=<span class="fix-value">40433</span><span class="soh">␁</span><span
                     class="fix-key">1091</span>=<span class="fix-value">N</span><span class="soh">␁</span><span
                     class="fix-key">10</span>=<span class="fix-value">027</span><span class="soh">␁</span></pre>
-        </section>
+            </section>
 
-        <section>
-            <h2>Simplified Order</h2>
-            <pre>NEW <i>stock</i> <i>price</i> <i>quantity</i></pre>
-            <pre class="fragment"><code class="c++">string newOrder(string stock, int price, int quantity) {
+            <section>
+                <h2>Simplified Order</h2>
+                <pre>NEW <i>stock</i> <i>price</i> <i>quantity</i></pre>
+                <pre class="fragment"><code class="c++">string newOrder(string stock, int price, int quantity) {
   stringstream s;
   s << "NEW " << stock << " " << price << " " << quantity;
   return s.str();
 }</code></pre>
-        </section>
+            </section>
 
-        <section>
-            <h2>How Fast Is It?</h2>
-            <ul>
-                <li>Time 100 million orders, get average time</li>
-                <li class="fragment">550ns per order (on 3.5GHz Haswell)</li>
-                <li class="fragment"><a href="https://goo.gl/jV4y7G">We can do better!</a></li>
-            </ul>
-        </section>
-
-        <section>
             <section>
-                <h2>Profile</h2>
-                <pre><code class="bash">$ perf record ./app
+                <h2>How Fast Is It?</h2>
+                <ul>
+                    <li>Time 100 million orders, get average time</li>
+                    <li class="fragment">550ns per order (on 3.5GHz Haswell)</li>
+                    <li class="fragment"><a href="https://goo.gl/jV4y7G">We can do better!</a></li>
+                </ul>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Profile</h2>
+                    <pre><code class="bash">$ perf record ./app
 $ perf report</code></pre>
-            <pre class="fragment">26.46%  __dynamic_cast
+                    <pre class="fragment">26.46%  __dynamic_cast
  6.00%  ostream::_M_insert
  5.12%  __strcmp_sse2_unaligned
  4.10%  _int_free
@@ -139,8 +141,10 @@ $ perf report</code></pre>
  3.68%  basic_ostream& __ostream_insert
  3.67%  num_put::_M_insert_int
  2.36%  malloc</pre>
-            </section>
-            <section><h2>Dynamic cast?</h2><pre>__dynamic_cast()
+                </section>
+                <section>
+                    <h2>Dynamic cast?</h2>
+                    <pre>__dynamic_cast()
 bool std::has_facet(std::locale const&)
 std::basic_ios::_M_cache_locale(std::locale const&)
 std::basic_ios::init(...)
@@ -148,9 +152,10 @@ std::basic_istream::basic_istream(...)
 std::basic_iostream::basic_iostream(...)
 std::basic_stringstream::basic_stringstream(...)
 newOrder</pre>
-            </section>
-            <section>
-                <h2>Dynamic cast?</h2><pre><code class="c++" data-trim>
+                </section>
+                <section>
+                    <h2>Dynamic cast?</h2>
+                    <pre><code class="c++" data-trim>
 template&lt;typename _CharT, typename _Traits>
 void basic_ios&lt;_CharT, _Traits>::_M_cache_locale(
     const locale& __loc) {
@@ -167,9 +172,10 @@ void basic_ios&lt;_CharT, _Traits>::_M_cache_locale(
   else _M_num_get = 0;
 }
 </code></pre>
-            </section>
-            <section>
-                <h2>Dynamic cast?</h2><pre><code class="c++" data-trim>
+                </section>
+                <section>
+                    <h2>Dynamic cast?</h2>
+                    <pre><code class="c++" data-trim>
 template&lt;typename _Facet> bool
 has_facet(const locale& __loc) {
   const size_t __i = _Facet::id._M_id();
@@ -178,55 +184,55 @@ has_facet(const locale& __loc) {
     &amp;&amp; dynamic_cast&lt;const _Facet*>(__facets[__i]));
 }
                 </code></pre>
+                </section>
             </section>
-        </section>
 
-        <section>
-            <h2>Take Two</h2>
-            <pre><code class="c++">void newOrder(char *buf, const char *stock,
+            <section>
+                <h2>Take Two</h2>
+                <pre><code class="c++">void newOrder(char *buf, const char *stock,
               int price, int quantity) {
   sprintf(buf, "NEW %s %d %d", stock, price, quantity);
 }</code></pre>
-        </section>
+            </section>
 
-        <section>
-            <h2>Take Two - Results</h2>
-            <ul>
-                <li>130ns per order</li>
-                <li>4x faster!</li>
-                <li><a href="https://goo.gl/XVmPzv">Compiler Explorer Link</a></li>
-                <li class="fragment">We can still do better!</li>
-            </ul>
-            <pre class="fragment">47.38%  <a
+            <section>
+                <h2>Take Two - Results</h2>
+                <ul>
+                    <li>130ns per order</li>
+                    <li>4x faster!</li>
+                    <li><a href="https://goo.gl/XVmPzv">Compiler Explorer Link</a></li>
+                    <li class="fragment">We can still do better!</li>
+                </ul>
+                <pre class="fragment">47.38%  <a
                     href="http://osxr.org/glibc/source/stdio-common/vfprintf.c?v=glibc-2.19.0#0221">vfprintf</a>
 21.51%  <a href="http://osxr.org/glibc/source/libio/genops.c?v=2.19.0#0442">_IO_default_xsputn</a>
 9.81%  <a href="http://osxr.org/glibc/source/string/strchrnul.c?v=glibc-2.16.0#0032">__strchrnul</a>
 6.80%  <a href="http://osxr.org/glibc/source/stdio-common/_itoa.c?v=glibc-2.19.0#0163">_itoa_word</a>
  </pre>
-        </section>
+            </section>
 
-        <section>
-            <h2>Take Three - Rethink</h2>
-            <ul class="fragment">
-                <li>Don't need full generality of printf</li>
-                <li>Create a custom formatter</li>
-                <li>Maybe end up with a faster <code>_itoa_word</code></li>
-            </ul>
-        </section>
+            <section>
+                <h2>Take Three - Rethink</h2>
+                <ul class="fragment">
+                    <li>Don't need full generality of printf</li>
+                    <li>Create a custom formatter</li>
+                    <li>Maybe end up with a faster <code>_itoa_word</code></li>
+                </ul>
+            </section>
 
-        <section>
-            <h2>How to do itoa?</h2>
-            <ul class="fragment">
-                <li>Rightmost digit is <code>value % 10</code></li>
-                <li>Next digit is <code>(value / 10) % 10</code></li>
-                <li>And so on...</li>
-                <li>Digits come out in reverse order</li>
-            </ul>
-        </section>
+            <section>
+                <h2>How to do itoa?</h2>
+                <ul class="fragment">
+                    <li>Rightmost digit is <code>value % 10</code></li>
+                    <li>Next digit is <code>(value / 10) % 10</code></li>
+                    <li>And so on...</li>
+                    <li>Digits come out in reverse order</li>
+                </ul>
+            </section>
 
-        <section>
-            <h2>Take Three</h2>
-            <pre><code class="c++">class Format {
+            <section>
+                <h2>Take Three</h2>
+                <pre><code class="c++">class Format {
   char _buffer[2048];
   int _ptr{0};
 public:
@@ -238,22 +244,22 @@ public:
   void decimalAppend(int value);
   void decimalAppendNonNeg(unsigned value);
 };</code></pre>
-        </section>
+            </section>
 
-        <section>
-            <h2>Take Three</h2>
-            <pre><code class="c++">void Format::decimalAppend(int value) {
+            <section>
+                <h2>Take Three</h2>
+                <pre><code class="c++">void Format::decimalAppend(int value) {
   if (value < 0) {
     append('-');
     value = -value;
   }
   decimalAppendNonNeg(value);
 }</code></pre>
-        </section>
-        <section>
+            </section>
             <section>
-                <h2>Take Three</h2>
-                <pre><code class="c++">void Format::decimalAppendNonNeg(unsigned value) {
+                <section>
+                    <h2>Take Three</h2>
+                    <pre><code class="c++">void Format::decimalAppendNonNeg(unsigned value) {
   int startPos = _ptr;
   do {
     append(value % 10 + '0');
@@ -265,10 +271,10 @@ public:
   while (end > start)
     swap(*start++, *end--);
 }</code></pre>
-            </section>
+                </section>
 
-            <section>
-                <h2>Take Three</h2>
+                <section>
+                    <h2>Take Three</h2>
                     <pre><code class="c++" data-trim>
 append(value % 10 + '0');
 value /= 10;</code></pre>
@@ -289,12 +295,12 @@ sub esi, eax          ; esi = value - floor(value / 10) * 10
 add esi, 48           ; add '0' to get ASCII
 mov [rdi+rcx], sil    ; write out
 </code></pre>
+                </section>
             </section>
-        </section>
 
-        <section>
-            <h2>Take Three</h2>
-            <pre><code class="c++">void newOrder(Format &format, const char *stock,
+            <section>
+                <h2>Take Three</h2>
+                <pre><code class="c++">void newOrder(Format &format, const char *stock,
               int price, int quantity) {
   format.append("NEW ");
   format.append(stock);
@@ -304,26 +310,26 @@ mov [rdi+rcx], sil    ; write out
   format.decimalAppendNonNeg(quantity);
   format.finish();
 }</code></pre>
-        </section>
+            </section>
 
-        <section>
             <section>
-                <h2>Take Three - Results</h2>
-                <ul>
-                    <li>20ns / order</li>
-                    <li>~100 CPU clock cycles</li>
-                    <li>27x faster than Take One</li>
-                    <li>6.5x faster than Take Two</li>
-                </ul>
-            </section>
-            <section>
-                <h2>Take Three - Profile</h2>
-                <pre>94.93% newOrder(Format&, char const*, int, int)
+                <section>
+                    <h2>Take Three - Results</h2>
+                    <ul>
+                        <li>20ns / order</li>
+                        <li>~100 CPU clock cycles</li>
+                        <li>27x faster than Take One</li>
+                        <li>6.5x faster than Take Two</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Take Three - Profile</h2>
+                    <pre>94.93% newOrder(Format&, char const*, int, int)
  4.86% main</pre>
-            </section>
-            <section>
-                <h2>Take Three - Profile</h2>
-                <pre><code class="asm" data-trim>
+                </section>
+                <section>
+                    <h2>Take Three - Profile</h2>
+                    <pre><code class="asm" data-trim>
 0.68% mov    %esi,%edx
 1.66% mov    %ecx,%eax
 2.09% movslq %edx,%r8
@@ -338,18 +344,18 @@ mov [rdi+rcx], sil    ; write out
 1.31% mov    %cl,(%rdi,%r8,1)
 2.29% mov    %edx,%ecx
 </code></pre>
+                </section>
             </section>
-        </section>
 
-        <section>
-            <h2>Take Three - continued</h2>
-            <ul>
-                <li>Compiler Explorer links: <a href="https://goo.gl/kv7ex7">itoa only</a>, <a
-                        href="https://goo.gl/HHghzf">full</a></li>
-                <li>Can we do better?</li>
-                <li class="fragment">Absolutely...</li>
-            </ul>
-        </section>
+            <section>
+                <h2>Take Three - continued</h2>
+                <ul>
+                    <li>Compiler Explorer links: <a href="https://goo.gl/kv7ex7">itoa only</a>, <a
+                            href="https://goo.gl/HHghzf">full</a></li>
+                    <li>Can we do better?</li>
+                    <li class="fragment">Absolutely...</li>
+                </ul>
+            </section>
 
             <section>
                 <h2>Best so far</h2>
@@ -366,7 +372,7 @@ mov [rdi+rcx], sil    ; write out
                 </ul>
             </section>
             <section>
-<pre><code class="c++" data-trim>
+                <pre><code class="c++" data-trim>
 static unsigned const PowersOf10[] =
   {1, 10, 100, 1000, 10000, 100000,
     1000000, 10000000, 100000000, 1000000000};
@@ -378,74 +384,49 @@ static unsigned numDigits(unsigned v) {
   return log10 + 1;
 }</code></pre>
             </section>
-        <section>
-            <h2>Of Course</h2>
-            <ul>
-                <li>Trading system much more than this</li>
-                <li>Networking</li>
-                <li>Algorithm</li>
-                <li>Safeties</li>
-                <li>Logging and auditing</li>
-                <li>Testing</li>
-            </ul>
-        </section>
+            <section>
+                <h2>Of Course</h2>
+                <ul>
+                    <li>Trading system much more than this</li>
+                    <li>Networking</li>
+                    <li>Algorithm</li>
+                    <li>Safeties</li>
+                    <li>Logging and auditing</li>
+                    <li>Testing</li>
+                </ul>
+            </section>
 
-        <section>
-            <h2>Thanks for listening</h2>
-            <ul>
-                <li>@mattgodbolt</li>
-                <li>matt@godbolt.org</li>
-            </ul>
-        </section>
+            <section>
+                <h2>Thanks for listening</h2>
+                <ul>
+                    <li>@mattgodbolt</li>
+                    <li>matt@godbolt.org</li>
+                </ul>
+            </section>
+        </div>
+
     </div>
 
-</div>
+    <script src="reveal.js/dist/reveal.js"></script>
+    <script src="reveal.js/plugin/highlight/highlight.js"></script>
 
-<script src="lib/js/head.min.js"></script>
-<script src="js/reveal.js"></script>
+    <script>
 
-<script>
+        // Full list of configuration options available at:
+        // https://github.com/hakimel/reveal.js#configuration
+        Reveal.initialize({
+            controls: true,
+            progress: false,
+            history: true,
+            center: true,
 
-    // Full list of configuration options available at:
-    // https://github.com/hakimel/reveal.js#configuration
-    Reveal.initialize({
-        controls: true,
-        progress: false,
-        history: true,
-        center: true,
+            transition: 'fade', // none/fade/slide/convex/concave/zoom
 
-        transition: 'fade', // none/fade/slide/convex/concave/zoom
+            plugins: [RevealHighlight],
+        });
 
-        // Optional reveal.js plugins
-        dependencies: [
-            {
-                src: 'lib/js/classList.js', condition: function () {
-                return !document.body.classList;
-            }
-            },
-            {
-                src: 'plugin/markdown/marked.js', condition: function () {
-                return !!document.querySelector('[data-markdown]');
-            }
-            },
-            {
-                src: 'plugin/markdown/markdown.js', condition: function () {
-                return !!document.querySelector('[data-markdown]');
-            }
-            },
-            {
-                src: 'plugin/highlight/highlight.js', async: true, condition: function () {
-                return !!document.querySelector('pre code');
-            }, callback: function () {
-                hljs.initHighlightingOnLoad();
-            }
-            },
-            {src: 'plugin/zoom-js/zoom.js', async: true},
-            {src: 'plugin/notes/notes.js', async: true}
-        ]
-    });
-
-</script>
+    </script>
 
 </body>
+
 </html>
