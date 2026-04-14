@@ -3,7 +3,7 @@
     <h2>Profile</h2>
     <pre><code class="language-bash">$ perf record ./app
 $ perf report</code></pre>
-    <pre class="fragment"><code>26.46%  __dynamic_cast
+    <pre class="fragment"><code class="language-plaintext">26.46%  __dynamic_cast
  6.00%  ostream::_M_insert
  5.12%  __strcmp_sse2_unaligned
  4.10%  _int_free
@@ -16,7 +16,7 @@ $ perf report</code></pre>
   </section>
   <section>
     <h2>Dynamic cast?</h2>
-    <pre><code>__dynamic_cast()
+    <pre><code class="language-cpp">__dynamic_cast()
 bool std::has_facet(std::locale const&amp;)
 std::basic_ios::_M_cache_locale(std::locale const&amp;)
 std::basic_ios::init(...)
@@ -74,7 +74,7 @@ has_facet(const locale&amp; __loc) {
   </section>
   <section>
     <h2>Profile - today</h2>
-    <pre><code>23.87%  __memmove_avx_unaligned_erms
+    <pre><code class="language-plaintext">23.87%  __memmove_avx_unaligned_erms
 10.55%  __ostream_insert
  6.17%  basic_streambuf::xsputn
  4.66%  newOrder

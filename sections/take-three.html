@@ -54,8 +54,8 @@ public:
     value /= 10;
   } while (value);
   // Reverse the digits.
-  auto end = &_buffer[_ptr - 1];
-  auto start = &_buffer[startPos];
+  auto end = &amp;_buffer[_ptr - 1];
+  auto start = &amp;_buffer[startPos];
   while (end > start)
     std::swap(*start++, *end--);
 }</code></pre>
@@ -66,7 +66,7 @@ public:
     <pre><code class="language-cpp" data-trim>
 append(value % 10 + '0');
 value /= 10;</code></pre>
-    <pre class="fragment"><code class="language-x86asm" data-trim>
+    <pre class="fragment" style="font-size: 0.95em"><code class="language-x86asm" data-trim>
 mov r10d, 0xcccccccd
 mov eax, esi          ; esi is value, move to eax
 mul r10d              ; tmp = value * 0xcccccccd
@@ -87,7 +87,7 @@ mov [rdi+rcx], sil    ; write out
 
   <section>
     <h2>Take Three</h2>
-    <pre><code class="language-cpp">void newOrder(Format &format, const char *stock,
+    <pre><code class="language-cpp">void newOrder(Format &amp;format, const char *stock,
               int price, int quantity) {
   format.append("NEW ");
   format.append(stock);
@@ -111,10 +111,8 @@ mov [rdi+rcx], sil    ; write out
 
   <section>
     <h2>Take Three - Profile</h2>
-    <pre>
-94.93% newOrder(Format&, char const*, int, int)
- 4.86% main</pre
-    >
+    <pre><code class="language-plaintext">94.93% newOrder(Format&amp;, char const*, int, int)
+ 4.86% main</code></pre>
   </section>
 
   <section>
