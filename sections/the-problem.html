@@ -1,0 +1,58 @@
+<section>
+  <section>
+    <h2>Placing Orders</h2>
+    <ul>
+      <li>Many exchanges use FIX protocol</li>
+      <li>ASCII <code>KEY=VALUE</code> pairs</li>
+      <li>Separated by <code>SOH</code> byte (<code>'␁' / '\x01'</code>)</li>
+      <li>Not very efficient</li>
+      <li>Requires several binary-to-decimal conversions</li>
+    </ul>
+    <pre><span class="fix-key">8</span>=<span class="fix-value">FIX.4.2</span><span class="soh">␁</span><span
+        class="fix-key">9</span>=<span class="fix-value">230</span><span class="soh">␁</span><span
+        class="fix-key">35</span>=<span class="fix-value">D</span><span class="soh">␁</span><span
+        class="fix-key">34</span>=<span class="fix-value">000000698</span><span class="soh">␁</span><span
+        class="fix-key">49</span>=<span class="fix-value">zxcy-01</span><span class="soh">␁</span><span
+        class="fix-key">52</span>=<span class="fix-value">20150910-18:38:30</span><span class="soh">␁</span><br><span
+        class="fix-key">56</span>=<span class="fix-value">CME</span><span class="soh">␁</span><span
+        class="fix-key">57</span>=<span class="fix-value">G</span><span class="soh">␁</span><span class="fix-key">60</span>=<span class="fix-value">20150910-18:38:30</span><span class="soh">␁</span><span
+        class="fix-key">167</span>=<span class="fix-value">FUT</span><span class="soh">␁</span><span
+        class="fix-key">21</span>=<span class="fix-value">1</span><span class="soh">␁</span><span
+        class="fix-key">204</span>=<span class="fix-value">0</span><span class="soh">␁</span><span
+        class="fix-key">9702</span>=<span class="fix-value">2</span><span class="soh">␁</span><span
+        class="fix-key">40</span>=<span class="fix-value">2</span><span class="soh">␁</span><br><span
+        class="fix-key">59</span>=<span class="fix-value">0</span><span class="soh">␁</span><span
+        class="fix-key">11</span>=<span class="fix-value">RS</span><span class="soh">␁</span><span
+        class="fix-key">54</span>=<span class="fix-value">1</span><span class="soh">␁</span><span
+        class="fix-key">38</span>=<span class="fix-value">4</span><span class="soh">␁</span><span
+        class="fix-key">44</span>=<span class="fix-value">-65</span><span class="soh">␁</span><span
+        class="fix-key">55</span>=<span class="fix-value">CL</span><span class="soh">␁</span><span
+        class="fix-key">107</span>=<span class="fix-value">CLF6-CLG6</span><span class="soh">␁</span><span
+        class="fix-key">1028</span>=<span class="fix-value">N</span><span class="soh">␁</span><span
+        class="fix-key">50</span>=<span class="fix-value">MOO</span><span class="soh">␁</span><br><span
+        class="fix-key">142</span>=<span class="fix-value">US,UT</span><span class="soh">␁</span><span
+        class="fix-key">1</span>=<span class="fix-value">237504</span><span class="soh">␁</span><span
+        class="fix-key">7928</span>=<span class="fix-value">40433</span><span class="soh">␁</span><span
+        class="fix-key">1091</span>=<span class="fix-value">N</span><span class="soh">␁</span><span
+        class="fix-key">10</span>=<span class="fix-value">027</span><span class="soh">␁</span></pre>
+  </section>
+
+  <section>
+    <h2>Simplified Order</h2>
+    <pre>NEW <i>stock</i> <i>price</i> <i>quantity</i></pre>
+    <pre class="fragment"><code class="language-cpp">string newOrder(string stock, int price, int quantity) {
+  stringstream s;
+  s &lt;&lt; "NEW " &lt;&lt; stock &lt;&lt; " " &lt;&lt; price &lt;&lt; " " &lt;&lt; quantity;
+  return s.str();
+}</code></pre>
+  </section>
+
+  <section>
+    <h2>How Fast Is It?</h2>
+    <ul>
+      <li>Time 100 million orders, get average time</li>
+      <li class="fragment">550ns per order (on 3.5GHz Haswell)</li>
+      <li class="fragment"><a href="https://goo.gl/jV4y7G">We can do better!</a></li>
+    </ul>
+  </section>
+</section>

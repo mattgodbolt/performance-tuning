@@ -1,0 +1,25 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "reveal-ce": "^1.2.0",
+    "vite": "^8.0.3"
+  },
+  "lint-staged": {
+    "*": "prettier --write --ignore-unknown"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "less": "^4.6.4",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
+    "vite-plugin-static-copy": "^4.0.0"
+  }
+}

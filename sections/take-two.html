@@ -1,0 +1,25 @@
+<section>
+  <section>
+    <h2>Take Two</h2>
+    <pre><code class="language-cpp">void newOrder(char *buf, const char *stock,
+              int price, int quantity) {
+  sprintf(buf, "NEW %s %d %d", stock, price, quantity);
+}</code></pre>
+  </section>
+
+  <section>
+    <h2>Take Two - Results</h2>
+    <ul>
+      <li>130ns per order</li>
+      <li>4x faster!</li>
+      <li><a href="https://goo.gl/XVmPzv">Compiler Explorer Link</a></li>
+      <li class="fragment">We can still do better!</li>
+    </ul>
+    <pre class="fragment">47.38%  <a
+        href="http://osxr.org/glibc/source/stdio-common/vfprintf.c?v=glibc-2.19.0#0221">vfprintf</a>
+21.51%  <a href="http://osxr.org/glibc/source/libio/genops.c?v=2.19.0#0442">_IO_default_xsputn</a>
+9.81%  <a href="http://osxr.org/glibc/source/string/strchrnul.c?v=glibc-2.16.0#0032">__strchrnul</a>
+6.80%  <a href="http://osxr.org/glibc/source/stdio-common/_itoa.c?v=glibc-2.19.0#0163">_itoa_word</a>
+ </pre>
+  </section>
+</section>

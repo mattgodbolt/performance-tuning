@@ -1,0 +1,106 @@
+// HRT theme colour references (from CSS custom properties in hrt-theme.css)
+@hrt-orange: var(--hrt-orange);
+@hrt-white: var(--hrt-white);
+@hrt-slate: var(--hrt-slate);
+@hrt-space: rgba(31, 31, 56, 0.75);
+
+// HRT logo in bottom-left corner (avoids overlap with reveal.js controls)
+.reveal::after {
+  content: "";
+  position: fixed;
+  bottom: 16px;
+  left: 20px;
+  width: 60px;
+  height: 42px;
+  background: url("images/hrt-logo.png") no-repeat center / contain;
+  z-index: 10;
+  pointer-events: none;
+}
+
+// Slide structure
+.reveal .slides {
+  // Orange accent for section header slides
+  section.section-header h2 {
+    font-size: 2em;
+    font-weight: 700;
+    color: @hrt-white;
+    border-bottom: 3px solid @hrt-orange;
+    padding-bottom: 15px;
+    display: inline-block;
+  }
+
+  // Content card: semi-transparent panel behind each leaf slide
+  section section:not(.section-header) {
+    background: @hrt-space;
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 130, 0, 0.1);
+  }
+}
+
+.reveal section {
+  img.no-border {
+    border: none !important;
+    box-shadow: none !important;
+    background: none !important;
+  }
+  img.stretch {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+// Two-column layout
+.col2 {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  gap: 2em;
+
+  > * {
+    flex: 1;
+  }
+}
+
+// Image utilities
+.no-border {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+// Attribution text
+.attribution {
+  font-size: 0.4em;
+  font-style: italic;
+  color: @hrt-slate;
+  text-align: center;
+  margin-top: 0.5em;
+}
+
+// Blaring TODO markers — visible on slides during development
+.todo {
+  background: #ff0040;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.7em;
+  padding: 8px 16px;
+  border-radius: 6px;
+  display: inline-block;
+  margin: 8px 0;
+  text-align: left;
+}
+
+// Talk-specific: FIX protocol message colouring
+.soh {
+  color: rgba(27, 145, 255);
+}
+
+.fix-key {
+  color: #118626;
+}
+
+.fix-value {
+  color: #7e7b7b;
+}

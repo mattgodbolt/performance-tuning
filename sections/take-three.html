@@ -1,0 +1,148 @@
+<section>
+  <section>
+    <h2>Take Three - Rethink</h2>
+    <ul class="fragment">
+      <li>Don't need full generality of printf</li>
+      <li>Create a custom formatter</li>
+      <li>Maybe end up with a faster <code>_itoa_word</code></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>How to do itoa?</h2>
+    <ul class="fragment">
+      <li>Rightmost digit is <code>value % 10</code></li>
+      <li>Next digit is <code>(value / 10) % 10</code></li>
+      <li>And so on...</li>
+      <li>Digits come out in reverse order</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Take Three</h2>
+    <pre><code class="language-cpp">class Format {
+  char _buffer[2048];
+  int _ptr{0};
+public:
+  void append(char c) { _buffer[_ptr++] = c; }
+  void append(const char *data) {
+    while (*data) append(*data++);
+  }
+  void finish() { append('\x00'); }
+  void decimalAppend(int value);
+  void decimalAppendNonNeg(unsigned value);
+};</code></pre>
+  </section>
+
+  <section>
+    <h2>Take Three</h2>
+    <pre><code class="language-cpp">void Format::decimalAppend(int value) {
+  if (value < 0) {
+    append('-');
+    value = -value;
+  }
+  decimalAppendNonNeg(value);
+}</code></pre>
+  </section>
+
+  <section>
+    <section>
+      <h2>Take Three</h2>
+      <pre><code class="language-cpp">void Format::decimalAppendNonNeg(unsigned value) {
+  int startPos = _ptr;
+  do {
+    append(value % 10 + '0');
+    value /= 10;
+  } while (value);
+  // Reverse the digits.
+  auto end = &_buffer[_ptr - 1];
+  auto start = &_buffer[startPos];
+  while (end > start)
+    swap(*start++, *end--);
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>Take Three</h2>
+      <pre><code class="language-cpp" data-trim>
+append(value % 10 + '0');
+value /= 10;</code></pre>
+      <pre class="fragment"><code class="language-x86asm" data-trim>
+mov r10d, 0xcccccccd
+mov eax, esi          ; esi is value, move to eax
+mul r10d              ; tmp = value * 0xcccccccd
+                      ; eax = bot32(tmp)
+                      ; edx = top32(tmp)
+shr edx, 3            ; edx = value * 0xcccccccd / 2^35
+                      ; 0xcccccccd / 2^35 = 0.10000000000582077
+                      ; edx = floor(value / 10)
+
+lea eax, [rdx+rdx*4]  ; eax = edx * 5
+add eax, eax          ; eax *= 2, eax is now edx*10
+sub esi, eax          ; esi = value - floor(value / 10) * 10
+                      ; esi = value % 10
+add esi, 48           ; add '0' to get ASCII
+mov [rdi+rcx], sil    ; write out
+</code></pre>
+    </section>
+  </section>
+
+  <section>
+    <h2>Take Three</h2>
+    <pre><code class="language-cpp">void newOrder(Format &format, const char *stock,
+              int price, int quantity) {
+  format.append("NEW ");
+  format.append(stock);
+  format.append(' ');
+  format.decimalAppend(price);
+  format.append(' ');
+  format.decimalAppendNonNeg(quantity);
+  format.finish();
+}</code></pre>
+  </section>
+
+  <section>
+    <section>
+      <h2>Take Three - Results</h2>
+      <ul>
+        <li>20ns / order</li>
+        <li>~100 CPU clock cycles</li>
+        <li>27x faster than Take One</li>
+        <li>6.5x faster than Take Two</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Take Three - Profile</h2>
+      <pre>94.93% newOrder(Format&, char const*, int, int)
+ 4.86% main</pre>
+    </section>
+    <section>
+      <h2>Take Three - Profile</h2>
+      <pre><code class="language-x86asm" data-trim>
+0.68% mov    %esi,%edx
+1.66% mov    %ecx,%eax
+2.09% movslq %edx,%r8
+1.99% lea    0x1(%rdx),%esi
+0.68% mul    %r10d
+5.51% shr    $0x3,%edx
+0.83% lea    (%rdx,%rdx,4),%r9d
+1.65% add    %r9d,%r9d
+2.06% sub    %r9d,%ecx
+2.20% add    $0x30,%ecx
+1.55% test   %edx,%edx
+1.31% mov    %cl,(%rdi,%r8,1)
+2.29% mov    %edx,%ecx
+</code></pre>
+    </section>
+  </section>
+
+  <section>
+    <h2>Take Three - continued</h2>
+    <ul>
+      <li>Compiler Explorer links: <a href="https://goo.gl/kv7ex7">itoa only</a>, <a
+              href="https://goo.gl/HHghzf">full</a></li>
+      <li>Can we do better?</li>
+      <li class="fragment">Absolutely...</li>
+    </ul>
+  </section>
+</section>
