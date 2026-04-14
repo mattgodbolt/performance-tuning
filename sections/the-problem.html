@@ -40,7 +40,9 @@
   <section>
     <h2>Simplified Order</h2>
     <pre>NEW <i>stock</i> <i>price</i> <i>quantity</i></pre>
-    <pre class="fragment"><code class="language-cpp">string newOrder(string stock, int price, int quantity) {
+    <pre
+      class="fragment"
+    ><code class="language-cpp">string newOrder(string stock, int price, int quantity) {
   stringstream s;
   s &lt;&lt; "NEW " &lt;&lt; stock &lt;&lt; " " &lt;&lt; price &lt;&lt; " " &lt;&lt; quantity;
   return s.str();

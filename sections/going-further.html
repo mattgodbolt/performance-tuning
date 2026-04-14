@@ -3,12 +3,15 @@
     <h2>Best so far</h2>
     <ul>
       <li>Do two digits at a time <code>table[x % 100];</code></li>
-      <li>Number of digits in result, N is <code>1 + log10(x)</code>:
+      <li>
+        Number of digits in result, N is <code>1 + log10(x)</code>:
         <ul>
           <li><code>log2(x)</code> with <code class="asm">31 - clz</code></li>
           <li><code>log10(x) = log2(x) * (ln(2)/ln(10))</code></li>
           <li><code>log(2) / log(10) ~ 0.30103 ~ 1233/4096</code></li>
         </ul>
+      </li>
+
       <li>Generate bespoke routine for N digits</li>
       <li class="fragment"><a href="https://goo.gl/Pp0efb">13ns / order</a></li>
     </ul>
@@ -22,7 +25,7 @@ static unsigned const PowersOf10[] =
 static unsigned numDigits(unsigned v) {
   auto log2 = 31 - __builtin_clz(v);
   auto log10Approx = (log2 + 1) * 1233 >> 12;
-  auto log10 = log10Approx - (v < PowersOf10[log10Approx]);
+  auto log10 = log10Approx - (v &lt; PowersOf10[log10Approx]);
   return log10 + 1;
 }</code></pre>
   </section>

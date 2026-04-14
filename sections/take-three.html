@@ -37,7 +37,7 @@ public:
   <section>
     <h2>Take Three</h2>
     <pre><code class="language-cpp">void Format::decimalAppend(int value) {
-  if (value < 0) {
+  if (value &lt; 0) {
     append('-');
     value = -value;
   }
@@ -46,9 +46,8 @@ public:
   </section>
 
   <section>
-    <section>
-      <h2>Take Three</h2>
-      <pre><code class="language-cpp">void Format::decimalAppendNonNeg(unsigned value) {
+    <h2>Take Three</h2>
+    <pre><code class="language-cpp">void Format::decimalAppendNonNeg(unsigned value) {
   int startPos = _ptr;
   do {
     append(value % 10 + '0');
@@ -60,14 +59,14 @@ public:
   while (end > start)
     swap(*start++, *end--);
 }</code></pre>
-    </section>
+  </section>
 
-    <section>
-      <h2>Take Three</h2>
-      <pre><code class="language-cpp" data-trim>
+  <section>
+    <h2>Take Three</h2>
+    <pre><code class="language-cpp" data-trim>
 append(value % 10 + '0');
 value /= 10;</code></pre>
-      <pre class="fragment"><code class="language-x86asm" data-trim>
+    <pre class="fragment"><code class="language-x86asm" data-trim>
 mov r10d, 0xcccccccd
 mov eax, esi          ; esi is value, move to eax
 mul r10d              ; tmp = value * 0xcccccccd
@@ -84,7 +83,6 @@ sub esi, eax          ; esi = value - floor(value / 10) * 10
 add esi, 48           ; add '0' to get ASCII
 mov [rdi+rcx], sil    ; write out
 </code></pre>
-    </section>
   </section>
 
   <section>
@@ -102,23 +100,26 @@ mov [rdi+rcx], sil    ; write out
   </section>
 
   <section>
-    <section>
-      <h2>Take Three - Results</h2>
-      <ul>
-        <li>20ns / order</li>
-        <li>~100 CPU clock cycles</li>
-        <li>27x faster than Take One</li>
-        <li>6.5x faster than Take Two</li>
-      </ul>
-    </section>
-    <section>
-      <h2>Take Three - Profile</h2>
-      <pre>94.93% newOrder(Format&, char const*, int, int)
- 4.86% main</pre>
-    </section>
-    <section>
-      <h2>Take Three - Profile</h2>
-      <pre><code class="language-x86asm" data-trim>
+    <h2>Take Three - Results</h2>
+    <ul>
+      <li>20ns / order</li>
+      <li>~100 CPU clock cycles</li>
+      <li>27x faster than Take One</li>
+      <li>6.5x faster than Take Two</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Take Three - Profile</h2>
+    <pre>
+94.93% newOrder(Format&, char const*, int, int)
+ 4.86% main</pre
+    >
+  </section>
+
+  <section>
+    <h2>Take Three - Profile</h2>
+    <pre><code class="language-x86asm" data-trim>
 0.68% mov    %esi,%edx
 1.66% mov    %ecx,%eax
 2.09% movslq %edx,%r8
@@ -133,14 +134,15 @@ mov [rdi+rcx], sil    ; write out
 1.31% mov    %cl,(%rdi,%r8,1)
 2.29% mov    %edx,%ecx
 </code></pre>
-    </section>
   </section>
 
   <section>
     <h2>Take Three - continued</h2>
     <ul>
-      <li>Compiler Explorer links: <a href="https://goo.gl/kv7ex7">itoa only</a>, <a
-              href="https://goo.gl/HHghzf">full</a></li>
+      <li>
+        Compiler Explorer links: <a href="https://goo.gl/kv7ex7">itoa only</a>,
+        <a href="https://goo.gl/HHghzf">full</a>
+      </li>
       <li>Can we do better?</li>
       <li class="fragment">Absolutely...</li>
     </ul>

@@ -3,44 +3,44 @@
     <h2>Profile</h2>
     <pre><code class="language-bash">$ perf record ./app
 $ perf report</code></pre>
-    <pre class="fragment">26.46%  __dynamic_cast
+    <pre class="fragment"><code>26.46%  __dynamic_cast
  6.00%  ostream::_M_insert
  5.12%  __strcmp_sse2_unaligned
  4.10%  _int_free
  3.99%  basic_streambuf::xsputn
  3.96%  __int_to_char
  3.72%  newOrder
- 3.68%  basic_ostream& __ostream_insert
+ 3.68%  basic_ostream&amp; __ostream_insert
  3.67%  num_put::_M_insert_int
- 2.36%  malloc</pre>
+ 2.36%  malloc</code></pre>
   </section>
   <section>
     <h2>Dynamic cast?</h2>
-    <pre>__dynamic_cast()
-bool std::has_facet(std::locale const&)
-std::basic_ios::_M_cache_locale(std::locale const&)
+    <pre><code>__dynamic_cast()
+bool std::has_facet(std::locale const&amp;)
+std::basic_ios::_M_cache_locale(std::locale const&amp;)
 std::basic_ios::init(...)
 std::basic_istream::basic_istream(...)
 std::basic_iostream::basic_iostream(...)
 std::basic_stringstream::basic_stringstream(...)
-newOrder</pre>
+newOrder</code></pre>
   </section>
   <section>
     <h2>Dynamic cast?</h2>
     <pre><code class="language-cpp" data-trim>
 template&lt;typename _CharT, typename _Traits>
 void basic_ios&lt;_CharT, _Traits>::_M_cache_locale(
-    const locale& __loc) {
+    const locale&amp; __loc) {
   if (has_facet&lt;__ctype_type>(__loc))
-    _M_ctype = &use_facet&lt;__ctype_type>(__loc);
+    _M_ctype = &amp;use_facet&lt;__ctype_type>(__loc);
   else _M_ctype = 0;
 
   if (has_facet&lt;__num_put_type>(__loc))
-    _M_num_put = &use_facet&lt;__num_put_type>(__loc);
+    _M_num_put = &amp;use_facet&lt;__num_put_type>(__loc);
   else _M_num_put = 0;
 
   if (has_facet&lt;__num_get_type>(__loc)
-    _M_num_get = &use_facet&lt;__num_get_type>(__loc);
+    _M_num_get = &amp;use_facet&lt;__num_get_type>(__loc);
   else _M_num_get = 0;
 }
 </code></pre>
@@ -49,10 +49,10 @@ void basic_ios&lt;_CharT, _Traits>::_M_cache_locale(
     <h2>Dynamic cast?</h2>
     <pre><code class="language-cpp" data-trim>
 template&lt;typename _Facet> bool
-has_facet(const locale& __loc) {
+has_facet(const locale&amp; __loc) {
   const size_t __i = _Facet::id._M_id();
   const locale::facet** __facets = __loc._M_impl->_M_facets;
-  return (__i < __loc._M_impl->_M_facets_size
+  return (__i &lt; __loc._M_impl->_M_facets_size
     &amp;&amp; dynamic_cast&lt;const _Facet*>(__facets[__i]));
 }
     </code></pre>
