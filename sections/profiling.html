@@ -57,4 +57,32 @@ has_facet(const locale&amp; __loc) {
 }
     </code></pre>
   </section>
+  <section>
+    <h2>Fixed in GCC 11!</h2>
+    <p>
+      Jonathan Wakely replaced <code>dynamic_cast</code> with a compile-time
+      <code>static_cast</code> short-circuit for all standard facets:
+    </p>
+    <pre><code class="language-cpp" data-trim>
+#define _GLIBCXX_STD_FACET(...) \
+  if constexpr (__is_same(const _Facet, const __VA_ARGS__)) \
+    return static_cast&lt;const _Facet*>(__facets[__i])
+    </code></pre>
+    <p class="fragment">
+      The <code>dynamic_cast</code> fallback only remains for user-defined custom facets.
+    </p>
+  </section>
+  <section>
+    <h2>Profile - today</h2>
+    <pre><code>23.87%  __memmove_avx_unaligned_erms
+10.55%  __ostream_insert
+ 6.17%  basic_streambuf::xsputn
+ 4.66%  newOrder
+ 4.29%  std::locale::locale()
+ 4.13%  cfree
+ 3.87%  std::ios_base::ios_base()
+ 3.76%  _M_cache_locale
+ 3.62%  basic_stringbuf::overflow</code></pre>
+    <p class="fragment">No more <code>__dynamic_cast</code>!</p>
+  </section>
 </section>
