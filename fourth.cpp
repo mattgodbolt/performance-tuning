@@ -62,7 +62,7 @@ public:
         for (int i = N - 2; i >= 0; i -= 2) {
             auto foo = value % 100;
             value /= 100;
-            *reinterpret_cast<uint16_t *>(_buffer + _ptr + i) = _lookup[foo];
+            memcpy(_buffer + _ptr + i, &_lookup[foo], sizeof(uint16_t));
         }
         _ptr += N;
     }

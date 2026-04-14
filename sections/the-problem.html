@@ -42,8 +42,8 @@
     <pre>NEW <i>stock</i> <i>price</i> <i>quantity</i></pre>
     <pre
       class="fragment"
-    ><code class="language-cpp">string newOrder(string stock, int price, int quantity) {
-  stringstream s;
+    ><code class="language-cpp">std::string newOrder(std::string stock, int price, int quantity) {
+  std::stringstream s;
   s &lt;&lt; "NEW " &lt;&lt; stock &lt;&lt; " " &lt;&lt; price &lt;&lt; " " &lt;&lt; quantity;
   return s.str();
 }</code></pre>
@@ -53,8 +53,9 @@
     <h2>How Fast Is It?</h2>
     <ul>
       <li>Time 100 million orders, get average time</li>
-      <li class="fragment">550ns per order (on 3.5GHz Haswell)</li>
-      <li class="fragment"><a href="https://goo.gl/jV4y7G">We can do better!</a></li>
+      <!-- TODO: re-benchmark on modern hardware -->
+      <li class="fragment">550ns per order (on a circa-2015 Haswell)</li>
+      <li class="fragment"><a href="https://godbolt.org/g/jV4y7G">We can do better!</a></li>
     </ul>
   </section>
 </section>

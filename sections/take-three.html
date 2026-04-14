@@ -57,7 +57,7 @@ public:
   auto end = &_buffer[_ptr - 1];
   auto start = &_buffer[startPos];
   while (end > start)
-    swap(*start++, *end--);
+    std::swap(*start++, *end--);
 }</code></pre>
   </section>
 
@@ -140,8 +140,8 @@ mov [rdi+rcx], sil    ; write out
     <h2>Take Three - continued</h2>
     <ul>
       <li>
-        Compiler Explorer links: <a href="https://goo.gl/kv7ex7">itoa only</a>,
-        <a href="https://goo.gl/HHghzf">full</a>
+        Compiler Explorer links: <a href="https://godbolt.org/g/kv7ex7">itoa only</a>,
+        <a href="https://godbolt.org/g/HHghzf">full</a>
       </li>
       <li>Can we do better?</li>
       <li class="fragment">Absolutely...</li>

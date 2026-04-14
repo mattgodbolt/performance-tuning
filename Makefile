@@ -1,6 +1,6 @@
 all: first second third fourth fifth
 
-CXXFLAGS = -std=c++0x -O2 -ggdb3
+CXXFLAGS = -std=c++23 -O2 -ggdb3 -Wall -Wextra -Werror
 
 .PHONY: clean first second third fourth fifth
 

@@ -47,7 +47,7 @@ public:
             for (int i = N - 2; i >= 0; i -= 2) {
                 auto twoDigits = value % 100;
                 value /= 100;
-                *reinterpret_cast<uint16_t *>(_buffer + _ptr + i) = _lookup[twoDigits];
+                memcpy(_buffer + _ptr + i, &_lookup[twoDigits], sizeof(uint16_t));
             }
         }
         if (N & 1) _buffer[_ptr] = value % 10 + '0';
