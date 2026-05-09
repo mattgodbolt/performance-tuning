@@ -1,8 +1,8 @@
-all: first second third fourth fifth
+all: first second third fourth fifth sixth seventh
 
 CXXFLAGS = -std=c++23 -O2 -ggdb3 -Wall -Wextra -Werror
 
-.PHONY: clean first second third fourth fifth
+.PHONY: clean first second third fourth fifth sixth seventh
 
 clean:
 	rm -rf bin
@@ -31,3 +31,13 @@ fifth: bin/fifth
 bin/fifth: fifth.cpp
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) fifth.cpp -o bin/fifth
+
+sixth: bin/sixth
+bin/sixth: sixth.cpp
+	@mkdir -p bin
+	$(CXX) $(CXXFLAGS) sixth.cpp -o bin/sixth
+
+seventh: bin/seventh
+bin/seventh: seventh.cpp
+	@mkdir -p bin
+	$(CXX) $(CXXFLAGS) seventh.cpp -o bin/seventh

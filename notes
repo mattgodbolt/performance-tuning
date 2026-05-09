@@ -91,3 +91,26 @@ Notes:
 * Slide numbers updated (the-problem 550->310, take-two 130->115,
   take-three 20->18, going-further 13->9) and the 4x sprintf win is
   now closer to ~2.7x with the modern stringstream baseline.
+
+----
+
+std::format / std::format_to benchmark (May 2026, GCC 15.2 -O2):
+
+  std::format       ~118 ns / order
+  std::format_to    ~117 ns / order  (-O3: ~115 ns - no real change)
+  sprintf           ~115 ns / order  (for comparison)
+  custom Format      ~18 ns / order
+  best                ~7 ns / order
+
+Conclusion (counter to my prior hypothesis): std::format is roughly
+sprintf-speed, NOT custom-Format-speed. The integer-formatting kernel
+in libstdc++ does use the standard tricks, but the sink/iterator
+type-erasure wrapped around it costs as much as the win, so the
+overall throughput lands next to sprintf.
+
+So in the bonus slide: type-safe drop-in replacement for sprintf with
+similar performance - good enough for almost everything, but if you're
+in the 18 ns / 7 ns regime you still need a hand-rolled formatter.
+
+Files: sixth.cpp (std::format), seventh.cpp (std::format_to), wired
+into the Makefile alongside first..fifth.

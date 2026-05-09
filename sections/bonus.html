@@ -44,21 +44,58 @@ void newOrder(char *buf, const char *stock,
 
   <section>
     <h2>Is it free?</h2>
-    <ul>
-      <li class="fragment">No allocator footgun on <code>format_to</code></li>
+    <table class="data-table" style="margin: 0 auto">
+      <thead>
+        <tr>
+          <th>Version</th>
+          <th>ns / order</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>stringstream</code></td>
+          <td>~310</td>
+        </tr>
+        <tr>
+          <td><code>sprintf</code></td>
+          <td>~115</td>
+        </tr>
+        <tr>
+          <td><code>std::format</code></td>
+          <td>~118</td>
+        </tr>
+        <tr>
+          <td><code>std::format_to</code></td>
+          <td>~117</td>
+        </tr>
+        <tr>
+          <td>custom <code>Format</code></td>
+          <td>~18</td>
+        </tr>
+        <tr>
+          <td>"best"</td>
+          <td>~7</td>
+        </tr>
+      </tbody>
+    </table>
+    <ul style="font-size: 0.7em">
       <li class="fragment">
-        Heavily templated:
-        <ul>
-          <li><code>sprintf</code> version → ~9 lines of asm</li>
-          <li><code>std::format</code> version → ~25,000 lines of asm</li>
-        </ul>
+        Type-safe replacement for <code>sprintf</code>... and roughly the same speed
       </li>
-      <li class="fragment">Hot path is fine; cold paths and binary size are not</li>
-      <li class="fragment">For the last 10×, the custom <code>Format</code> still wins</li>
+      <li class="fragment">
+        Sink/iterator generic plumbing eats most of the win from clever <code>itoa</code>
+      </li>
+      <li class="fragment">
+        Asm: <code>sprintf</code> → ~9 lines · <code>std::format</code> → ~25k lines
+      </li>
+      <li class="fragment">For the last 10&times;, the custom <code>Format</code> still wins</li>
     </ul>
     <aside class="notes">
-      The 25k-line number is the compiler-explorer asm output with everything inlined - it's not
-      what ends up in your binary, but it gives a sense of how much template machinery is in flight.
+      Surprised me too - I thought format_to would be near custom-Format speed because libstdc++
+      uses similar two-digit tricks. The integer formatting kernel <em>is</em> fast; the iterator/
+      sink machinery wrapped around it isn't. The 25k asm lines are everything inlined in CE - most
+      of it is cold paths for non-integer types - but it's a useful signal of how much template
+      machinery is in flight.
     </aside>
   </section>
 </section>

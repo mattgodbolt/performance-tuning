@@ -152,6 +152,30 @@
   text-align: left;
 }
 
+// Compact data table: small font, centred, left-align first column, right-align rest.
+table.data-table {
+  font-size: 0.7em;
+  margin: 0 auto;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.2em 0.6em;
+  }
+
+  thead th {
+    text-align: center;
+  }
+
+  tbody td:first-child {
+    text-align: left;
+  }
+
+  tbody td {
+    text-align: right;
+  }
+}
+
 // Talk-specific: FIX protocol message rendering.
 // Custom elements <k>, <v>, <soh> keep the markup tiny and put the rendering
 // (colours, the SOH glyph, the wrap-after-SOH break opportunity) in CSS.
