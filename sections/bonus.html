@@ -43,6 +43,25 @@ void newOrder(char *buf, const char *stock,
   </section>
 
   <section>
+    <h2><code>fmt::format_to</code> - upstream</h2>
+    <p>
+      <a href="https://github.com/fmtlib/fmt">fmtlib/fmt</a> is the upstream of
+      <code>std::format</code>:
+    </p>
+    <pre><code class="language-cpp">#include &lt;fmt/core.h&gt;
+
+void newOrder(char *buf, const char *stock,
+              int price, int quantity) {
+  fmt::format_to(buf, "NEW {} {} {}",
+                 stock, price, quantity);
+}</code></pre>
+    <aside class="notes">
+      Same API. Different libstdc++ vs fmtlib implementations - and the throughput numbers say
+      they're not equivalent.
+    </aside>
+  </section>
+
+  <section>
     <h2>Is it free?</h2>
     <table class="data-table" style="margin: 0 auto">
       <thead>
@@ -54,23 +73,27 @@ void newOrder(char *buf, const char *stock,
       <tbody>
         <tr>
           <td><code>stringstream</code></td>
-          <td>~310</td>
+          <td>~290</td>
         </tr>
         <tr>
           <td><code>sprintf</code></td>
-          <td>~115</td>
+          <td>~110</td>
         </tr>
         <tr>
           <td><code>std::format</code></td>
-          <td>~118</td>
+          <td>~150</td>
         </tr>
         <tr>
           <td><code>std::format_to</code></td>
-          <td>~117</td>
+          <td>~130</td>
+        </tr>
+        <tr>
+          <td><code>fmt::format_to</code></td>
+          <td>~80</td>
         </tr>
         <tr>
           <td>custom <code>Format</code></td>
-          <td>~18</td>
+          <td>~16</td>
         </tr>
         <tr>
           <td>"best"</td>
@@ -78,12 +101,12 @@ void newOrder(char *buf, const char *stock,
         </tr>
       </tbody>
     </table>
-    <ul style="font-size: 0.7em">
+    <ul style="font-size: 0.65em">
       <li class="fragment">
-        Type-safe replacement for <code>sprintf</code>... and roughly the same speed
+        <code>std::format</code> ≈ <code>sprintf</code> - type-safe, <em>not</em> faster
       </li>
       <li class="fragment">
-        Sink/iterator generic plumbing eats most of the win from clever <code>itoa</code>
+        <code>fmt::format_to</code> beats both - same API, different implementation
       </li>
       <li class="fragment">
         Asm: <code>sprintf</code> → ~9 lines · <code>std::format</code> → ~25k lines
@@ -91,11 +114,12 @@ void newOrder(char *buf, const char *stock,
       <li class="fragment">For the last 10&times;, the custom <code>Format</code> still wins</li>
     </ul>
     <aside class="notes">
-      Surprised me too - I thought format_to would be near custom-Format speed because libstdc++
-      uses similar two-digit tricks. The integer formatting kernel <em>is</em> fast; the iterator/
-      sink machinery wrapped around it isn't. The 25k asm lines are everything inlined in CE - most
-      of it is cold paths for non-integer types - but it's a useful signal of how much template
-      machinery is in flight.
+      Surprised me on the std::format result - I'd assumed it would be close to custom-Format
+      because libstdc++ uses similar two-digit tricks. The integer formatting kernel <em>is</em>
+      fast; the iterator/sink machinery wrapped around it isn't. fmtlib (the upstream) does the
+      same job with less plumbing overhead and lands roughly halfway between sprintf and the
+      custom Format. The 25k asm lines are everything inlined in CE - most of it is cold paths
+      for non-integer types - but it's a useful signal of how much template machinery is in flight.
     </aside>
   </section>
 </section>

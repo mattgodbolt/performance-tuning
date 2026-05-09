@@ -114,3 +114,47 @@ in the 18 ns / 7 ns regime you still need a hand-rolled formatter.
 
 Files: sixth.cpp (std::format), seventh.cpp (std::format_to), wired
 into the Makefile alongside first..fifth.
+
+----
+
+fmtlib followup + GCC 16.1 results (May 2026, taskset -c 3, median of 5):
+
+  GCC 16.1.0  -O2:
+    first    (sstream)         ~292 ns
+    second   (sprintf)          ~112 ns
+    third    (custom Format)     ~16 ns
+    fourth                       ~24 ns
+    fifth    (best)               ~7 ns
+    sixth    (std::format)      ~153 ns
+    seventh  (std::format_to)   ~128 ns
+    eighth   (fmt::format_to)    ~80 ns
+
+User was right to push on fmtlib: it's clearly faster than std::format
+(80 vs 130 ns) - same API, different implementation, less iterator
+plumbing. Still ~5x slower than the custom Format though, so the
+"library formatters can't beat hand-rolled at this scale" story holds.
+
+Cross-compiler picture (median of 3, less precise):
+                  GCC12.5  GCC13.4  GCC15.2  GCC16.1
+  first             ~280     ~310     ~310     ~290
+  second             ~92     ~118     ~117     ~112
+  third              ~19      ~19      ~18      ~16
+  fifth              ~14      ~14       ~7       ~7
+  sixth             N/A      ~143     ~153     ~153
+  seventh           N/A      ~141     ~145     ~128
+  eighth            N/A      N/A      N/A       ~80   (libfmt
+                                                       host-glibc
+                                                       mismatch
+                                                       blocks build
+                                                       on g13/15)
+
+Notes:
+* sixth (std::format) requires GCC 13+ (no <format> in libstdc++ 12).
+* eighth fails to build on GCC 13/15 due to a host glibc threading-
+  header mismatch with the CE-distributed compiler trees (system
+  __GTHREAD_COND_INIT vs libstdc++'s expectations). Fine on GCC 16.
+* fifth's 2x speedup at GCC 15+ is real (consistent across runs);
+  haven't traced what optimisation kicked in.
+
+Slide numbers refreshed against GCC 16.1.0 (Take One 290, Two 110,
+Three 16, Going Further 7).
