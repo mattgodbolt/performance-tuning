@@ -33,13 +33,28 @@ function htmlInclude() {
 
 export default defineConfig({
   base: "./",
+  // Restrict dep pre-bundling to our own entry - otherwise Vite's scanner
+  // walks into reveal.js/test/test.html and fails on its qunit imports.
   optimizeDeps: {
     entries: ["index.html"],
+  },
+  build: {
+    // reveal.js's highlight.mjs is a pre-bundled ~1MB artifact with all
+    // highlight.js languages baked in via side-effect registration - not
+    // tree-shakeable. Lift the warning above that.
+    chunkSizeWarningLimit: 1200,
   },
   plugins: [
     htmlInclude(),
     viteStaticCopy({
-      targets: [{ src: "reveal.js/dist", dest: "reveal.js" }],
+      targets: [
+        { src: "reveal.js/dist", dest: "reveal.js" },
+        // Vite's HTML scanner only rewrites known asset attributes (<img src>
+        // etc.), so reveal.js's data-background-image/video/iframe URLs are
+        // left untouched and never copied to dist. Copy the whole images dir
+        // verbatim so any data-background-* reference Just Works.
+        { src: "images", dest: "." },
+      ],
     }),
     {
       name: "md-reload",

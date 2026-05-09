@@ -9,8 +9,8 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "reveal-ce": "^1.2.0",
-    "vite": "^8.0.3"
+    "reveal-ce": "^1.3.0",
+    "vite": "^8.0.10"
   },
   "lint-staged": {
     "*": "prettier --write --ignore-unknown"
@@ -18,8 +18,8 @@
   "devDependencies": {
     "husky": "^9.1.7",
     "less": "^4.6.4",
-    "lint-staged": "^16.4.0",
-    "prettier": "^3.8.1",
-    "vite-plugin-static-copy": "^4.0.0"
+    "lint-staged": "^17.0.2",
+    "prettier": "^3.8.3",
+    "vite-plugin-static-copy": "^4.1.0"
   }
 }

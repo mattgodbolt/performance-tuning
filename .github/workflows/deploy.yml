@@ -27,7 +27,7 @@ jobs:
           node-version: 25.2.1
           cache: npm
 
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3

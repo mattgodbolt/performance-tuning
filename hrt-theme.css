@@ -129,6 +129,7 @@
   width: 100%;
   box-shadow: none;
   text-align: left;
+  position: relative;
 }
 
 .reveal pre code {
@@ -138,7 +139,7 @@
   padding: 15px 20px;
   font-size: 0.55em;
   line-height: 1.4;
-  max-height: 500px;
+  max-height: 600px;
 }
 
 .reveal code {
@@ -148,6 +149,13 @@
 
 .reveal pre code {
   color: var(--hrt-ghost);
+}
+
+.reveal .hljs.has-highlights tr.highlight-line {
+  text-shadow:
+    0 0 6px currentColor,
+    0 0 12px currentColor;
+  transition: text-shadow 0.4s ease;
 }
 
 .reveal .slides section .fragment.highlight-current-blue.current-fragment {
@@ -168,10 +176,28 @@
 }
 
 .reveal .slide-number {
-  color: var(--hrt-slate);
+  color: var(--hrt-white);
   font-family: "IBM Plex Mono", monospace;
-  font-size: 14px;
-  background: transparent;
+  font-size: 20px;
+  font-weight: 600;
+  background: rgba(255, 130, 0, 0.85);
+  padding: 4px 10px;
+  border-radius: 4px;
+  right: 16px;
+  bottom: 16px;
+}
+
+.reveal .slide-number a {
+  color: var(--hrt-white);
+}
+
+.reveal .slide-number-delimiter {
+  margin: 0 2px;
+  opacity: 0.7;
+}
+
+.reveal .controls {
+  bottom: 60px;
 }
 
 ::selection {

@@ -10,11 +10,64 @@
   position: fixed;
   bottom: 16px;
   left: 20px;
-  width: 60px;
-  height: 42px;
+  width: 90px;
+  height: 63px;
   background: url("images/hrt-logo.png") no-repeat center / contain;
   z-index: 10;
   pointer-events: none;
+}
+
+// Orange "thread" motif top-right: open ring + horizontal line that runs off
+// the right edge. Recurring brand anchor on every content slide.
+.reveal::before {
+  content: "";
+  position: fixed;
+  top: 32px;
+  right: 0;
+  width: 40vw;
+  height: 22px;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'><circle cx='11' cy='11' r='8' fill='none' stroke='%23ff8200' stroke-width='3'/></svg>")
+      left center / 22px 22px no-repeat,
+    linear-gradient(@hrt-orange, @hrt-orange) 26px center / calc(100% - 26px) 3px no-repeat;
+  z-index: 0;
+  pointer-events: none;
+}
+
+// Mirror motif: vertical orange thread at bottom-left, ring near the bottom,
+// line reaching up and off the top edge. Sits above the HRT logo.
+.reveal-viewport::before {
+  content: "";
+  position: fixed;
+  bottom: 90px;
+  left: 54px;
+  width: 22px;
+  height: 40vh;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'><circle cx='11' cy='11' r='8' fill='none' stroke='%23ff8200' stroke-width='3'/></svg>")
+      center top / 22px 22px no-repeat,
+    linear-gradient(@hrt-orange, @hrt-orange) center bottom / 3px calc(100% - 26px) no-repeat;
+  z-index: 0;
+  pointer-events: none;
+}
+
+// Hide the logo and both orange threads on the title slide (its own branding baked in)
+.reveal:has(> .slides > section.title-slide.present)::after,
+.reveal:has(> .slides > section.title-slide.present)::before {
+  display: none;
+}
+.reveal-viewport:has(.reveal > .slides > section.title-slide.present)::before {
+  display: none;
+}
+
+// Hide the slide number on the title slide too
+.reveal:has(section.title-slide.present) .slide-number {
+  display: none !important;
+}
+
+// Hide the navigation controls on the title slide too
+.reveal:has(section.title-slide.present) .controls {
+  display: none !important;
 }
 
 // Slide structure
@@ -62,6 +115,13 @@
   > * {
     flex: 1;
   }
+
+  // Centred variant: shrinks the gap so the two columns sit closer to the
+  // middle of the slide, useful when each column is narrow.
+  &.tight {
+    justify-content: center;
+    gap: 4em;
+  }
 }
 
 // Image utilities
@@ -79,7 +139,7 @@
   margin-top: 0.5em;
 }
 
-// Blaring TODO markers — visible on slides during development
+// Blaring TODO markers - visible on slides during development
 .todo {
   background: #ff0040;
   color: #fff;
