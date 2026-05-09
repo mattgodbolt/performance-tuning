@@ -38,13 +38,20 @@
       import Reveal from "./reveal.js/dist/reveal.mjs";
       import Notes from "./reveal.js/dist/plugin/notes.mjs";
       import Highlight from "./reveal.js/dist/plugin/highlight.mjs";
+      import CompilerExplorer from "reveal-ce";
 
       Reveal.initialize({
         hash: true,
         slideNumber: true,
         progress: false,
         transition: "fade",
-        plugins: [Notes, Highlight],
+        ce: {
+          defaultCompiler: "g161",
+          defaultCompilerOptions: "-O2 -std=c++23",
+          additionalCompilerOptions: "-Wall -Wextra -Werror",
+          maxLineLength: 58,
+        },
+        plugins: [Notes, CompilerExplorer, Highlight],
       });
     </script>
   </body>

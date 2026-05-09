@@ -1,7 +1,11 @@
 <section>
   <section>
     <h2>Take Two</h2>
-    <pre><code class="language-cpp">void newOrder(char *buf, const char *stock,
+    <pre><code class="language-cpp" data-ce>
+/// hide
+#include &lt;cstdio&gt;
+/// unhide
+void newOrder(char *buf, const char *stock,
               int price, int quantity) {
   sprintf(buf, "NEW %s %d %d", stock, price, quantity);
 }</code></pre>

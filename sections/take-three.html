@@ -87,7 +87,30 @@ mov [rdi+rcx], sil    ; write out
 
   <section>
     <h2>Take Three</h2>
-    <pre><code class="language-cpp">void newOrder(Format &amp;format, const char *stock,
+    <pre><code class="language-cpp" data-ce>
+/// hide
+#include &lt;utility&gt;
+class Format {
+  char _buffer[2048];
+  int _ptr{0};
+public:
+  void append(char c) { _buffer[_ptr++] = c; }
+  void append(const char *data) { while (*data) append(*data++); }
+  void finish() { append('\x00'); }
+  void decimalAppend(int value) {
+    if (value &lt; 0) { append('-'); value = -value; }
+    decimalAppendNonNeg(value);
+  }
+  void decimalAppendNonNeg(unsigned value) {
+    int startPos = _ptr;
+    do { append(value % 10 + '0'); value /= 10; } while (value);
+    auto end = &amp;_buffer[_ptr - 1];
+    auto start = &amp;_buffer[startPos];
+    while (end &gt; start) std::swap(*start++, *end--);
+  }
+};
+/// unhide
+void newOrder(Format &amp;format, const char *stock,
               int price, int quantity) {
   format.append("NEW ");
   format.append(stock);
