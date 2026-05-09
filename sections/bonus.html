@@ -1,0 +1,64 @@
+<!-- BONUS SECTION: not part of the main talk -->
+
+<!-- BONUS: std::format -->
+<section>
+  <section class="section-header">
+    <h2>Bonus: <code>std::format</code></h2>
+    <aside class="notes">
+      "Someone always asks: what about std::format?" Modern, type-safe, but not free.
+    </aside>
+  </section>
+
+  <section>
+    <h2>What about <code>std::format</code>?</h2>
+    <ul>
+      <li>C++20, type-safe, no <code>printf</code> format-string footguns</li>
+      <li>What you'd write today instead of <code>stringstream</code></li>
+    </ul>
+    <pre><code class="language-cpp" data-ce>
+/// hide
+#include &lt;format&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+/// unhide
+std::string newOrder(std::string_view stock,
+                     int price, int quantity) {
+  return std::format("NEW {} {} {}",
+                     stock, price, quantity);
+}</code></pre>
+  </section>
+
+  <section>
+    <h2><code>std::format_to</code> - in-place</h2>
+    <p>If you already own the buffer (à la <em>Take Two</em>):</p>
+    <pre><code class="language-cpp" data-ce>
+/// hide
+#include &lt;format&gt;
+/// unhide
+void newOrder(char *buf, const char *stock,
+              int price, int quantity) {
+  std::format_to(buf, "NEW {} {} {}",
+                 stock, price, quantity);
+}</code></pre>
+  </section>
+
+  <section>
+    <h2>Is it free?</h2>
+    <ul>
+      <li class="fragment">No allocator footgun on <code>format_to</code></li>
+      <li class="fragment">
+        Heavily templated:
+        <ul>
+          <li><code>sprintf</code> version → ~9 lines of asm</li>
+          <li><code>std::format</code> version → ~25,000 lines of asm</li>
+        </ul>
+      </li>
+      <li class="fragment">Hot path is fine; cold paths and binary size are not</li>
+      <li class="fragment">For the last 10×, the custom <code>Format</code> still wins</li>
+    </ul>
+    <aside class="notes">
+      The 25k-line number is the compiler-explorer asm output with everything inlined - it's not
+      what ends up in your binary, but it gives a sense of how much template machinery is in flight.
+    </aside>
+  </section>
+</section>

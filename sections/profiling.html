@@ -58,10 +58,11 @@ has_facet(const locale&amp; __loc) {
     </code></pre>
   </section>
   <section>
-    <h2>Fixed in GCC 11!</h2>
+    <h2>Fixed in GCC 13!</h2>
     <p>
-      Jonathan Wakely replaced <code>dynamic_cast</code> with a compile-time
-      <code>static_cast</code> short-circuit for all standard facets:
+      Jonathan Wakely (libstdc++/PR103755, Nov 2022) replaced
+      <code>dynamic_cast</code> with a compile-time <code>static_cast</code> short-circuit for all
+      standard facets:
     </p>
     <pre><code class="language-cpp" data-trim>
 #define _GLIBCXX_STD_FACET(...) \

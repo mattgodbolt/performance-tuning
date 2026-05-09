@@ -40,3 +40,54 @@ Non-slide notes.
 * log10 can be found with "count leading zero" instruction and a small lookup table
   * or even using a parallel divide (mult by recip) and then CLZ to find not only the answer
     but the number of 0s at front
+
+----
+
+Modernisation research (May 2026)
+
+Facet dynamic_cast fix:
+* The slide previously said "Fixed in GCC 11!" - this is wrong.
+* The fix is libstdc++ commit b3ac43a3, "Avoid redundant checks in
+  std::use_facet [PR103755]", by Jonathan Wakely, 9 Nov 2022.
+* It introduces __try_use_facet (pointer-returning helper used by both
+  has_facet and use_facet) and the _GLIBCXX_STD_FACET macro listing the
+  standard facets that get the static_cast fast path.
+* Verified on the release branches:
+  - releases/gcc-11: still uses dynamic_cast
+  - releases/gcc-12: still uses dynamic_cast
+  - releases/gcc-13: has _GLIBCXX_STD_FACET / static_cast
+* So the fix first ships in GCC 13.1 (April 2023). Slide updated.
+* Follow-up commit 952e67c0 (May 2024) extends the fast path to
+  const-qualified facet types.
+
+std::format:
+* C++20 alternative to stringstream/sprintf. Type-safe, no format-string
+  footguns. Compiles cleanly with g161 -std=c++23 -Wall -Wextra -Werror.
+* Costs: returning std::string still allocates; the asm output is
+  ~25k lines of templated machinery vs ~9 lines for sprintf - hot path
+  is fine but it's not "free".
+* std::format_to(buf, ...) gives the in-place variant if you already
+  own a buffer (closer to take-two's sprintf version).
+* Kept as a bonus slide (someone always asks).
+
+----
+
+Re-benchmarked May 2026, Intel i7-10510U @ 1.8GHz, -O2 -std=c++23:
+
+                  GCC 12.5    GCC 13.4    GCC 15.2
+  first  (sstream)  ~280 ns     ~310 ns     ~310 ns
+  second (sprintf)    92 ns      118 ns      117 ns
+  third  (Format)     19 ns       19 ns       18 ns
+  fourth              21 ns       24 ns       24 ns
+  fifth  (best)       14 ns       14 ns        7 ns
+
+Notes:
+* The GCC 11->13 facet dynamic_cast fix doesn't visibly help the
+  stringstream benchmark on this microarch - allocation/string
+  copy costs dominate. The fix is real and observable in profiles
+  (no more __dynamic_cast), but the wall-clock win is in the noise here.
+* sprintf got ~25% slower from GCC 12 to 13 - haven't traced why,
+  may be a glibc/libstdc++ tuning change.
+* Slide numbers updated (the-problem 550->310, take-two 130->115,
+  take-three 20->18, going-further 13->9) and the 4x sprintf win is
+  now closer to ~2.7x with the modern stringstream baseline.

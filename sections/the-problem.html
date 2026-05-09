@@ -60,8 +60,7 @@ std::string newOrder(std::string stock, int price, int quantity) {
     <h2>How Fast Is It?</h2>
     <ul>
       <li>Time 100 million orders, get average time</li>
-      <!-- TODO: re-benchmark on modern hardware -->
-      <li class="fragment">550ns per order (on a circa-2015 Haswell)</li>
+      <li class="fragment">~310ns per order (Intel i7-10510U, GCC 15)</li>
       <li class="fragment">We can do better!</li>
     </ul>
   </section>
