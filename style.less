@@ -159,6 +159,11 @@
   font-family: "IBM Plex Mono", monospace;
   text-align: left;
   overflow-wrap: anywhere;
+  // Crush HTML inter-tag whitespace (U+0020) so the source can be pretty-printed
+  // across multiple lines without rendering visible gaps. The ZWSPs (U+200B)
+  // injected by soh::after aren't word-spacing-eligible, so SOH-boundary line
+  // breaks still work.
+  word-spacing: -1ch;
 
   k {
     color: #118626;
