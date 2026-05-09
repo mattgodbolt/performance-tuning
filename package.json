@@ -4,8 +4,8 @@
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "fmt": "prettier --write .",
-    "fmt:check": "prettier --check .",
+    "fmt": "prettier --write . && clang-format -i *.cpp *.c",
+    "fmt:check": "prettier --check . && clang-format --dry-run --Werror *.cpp *.c",
     "prepare": "husky"
   },
   "dependencies": {
@@ -13,9 +13,11 @@
     "vite": "^8.0.10"
   },
   "lint-staged": {
+    "*.{cpp,c,h,hpp,cc,cxx}": "clang-format -i",
     "*": "prettier --write --ignore-unknown"
   },
   "devDependencies": {
+    "clang-format": "^1.8.0",
     "husky": "^9.1.7",
     "less": "^4.6.4",
     "lint-staged": "^17.0.2",
