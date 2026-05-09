@@ -1,12 +1,10 @@
 #include <cstdint>
 #include <cstring>
-#include <ctime>
 #include <iostream>
-#include <string>
+
+#include "bench.hpp"
 
 using namespace std;
-
-typedef uint64_t tstamp_t;
 
 static unsigned const PowersOf10[] = {1,         10,        100,     1000,
                                       10000,     100000,    1000000, 10000000,
@@ -94,14 +92,6 @@ public:
 
 uint16_t Format::_lookup[100];
 
-static inline tstamp_t timestamp() {
-  struct timespec tp;
-  clock_gettime(CLOCK_MONOTONIC, &tp);
-  uint64_t nanos = 1000000000;
-  nanos *= tp.tv_sec;
-  return nanos + tp.tv_nsec;
-}
-
 void newOrder(Format &format, const char *stock, int price, int quantity) {
   format.append("NEW ");
   format.append(stock);
@@ -113,7 +103,6 @@ void newOrder(Format &format, const char *stock, int price, int quantity) {
 }
 
 int main(int, const char **) {
-  constexpr auto numIters = 1000000000ull;
   Format::init();
   Format buf;
   newOrder(buf, "TWTR", 0, 1);
@@ -127,13 +116,11 @@ int main(int, const char **) {
     cout << buf.c_str() << endl;
     return 1;
   }
-  auto begin = timestamp();
-  for (size_t i = 0; i < numIters; ++i) {
+  bench::measure(1'000'000'000LL, [&](long long i) {
     buf.reset();
-    newOrder(buf, "TWTR", i & 0xff, (i & 0xfff) + 1);
-  }
-  auto nsTaken = timestamp() - begin;
-  cout << numIters << " orders in " << nsTaken << "ns" << endl;
-  cout << (double)nsTaken / numIters << "ns / order" << endl;
+    newOrder(buf, "TWTR", static_cast<int>(i & 0xff),
+             static_cast<int>((i & 0xfff) + 1));
+    bench::do_not_optimize(buf);
+  });
   return 0;
 }

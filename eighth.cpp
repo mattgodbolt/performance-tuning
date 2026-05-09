@@ -1,21 +1,12 @@
-// fmt::format_to into a fixed buffer (parallel to seventh.cpp's std::format_to).
-#include <cstdint>
+// fmt::format_to into a fixed buffer (parallel to seventh.cpp's
+// std::format_to).
 #include <cstring>
-#include <ctime>
 #include <fmt/core.h>
 #include <iostream>
 
+#include "bench.hpp"
+
 using namespace std;
-
-typedef uint64_t tstamp_t;
-
-static inline tstamp_t timestamp() {
-  struct timespec tp;
-  clock_gettime(CLOCK_MONOTONIC, &tp);
-  uint64_t nanos = 1000000000;
-  nanos *= tp.tv_sec;
-  return nanos + tp.tv_nsec;
-}
 
 void newOrder(char *buf, const char *stock, int price, int quantity) {
   auto out = fmt::format_to(buf, "NEW {} {} {}", stock, price, quantity);
@@ -23,7 +14,6 @@ void newOrder(char *buf, const char *stock, int price, int quantity) {
 }
 
 int main(int, const char **) {
-  constexpr auto numIters = 100000000;
   char buf[2048];
   newOrder(buf, "TWTR", 0, 1);
   if (strcmp(buf, "NEW TWTR 0 1")) {
@@ -35,13 +25,10 @@ int main(int, const char **) {
     cout << buf << endl;
     return 1;
   }
-  auto begin = timestamp();
-  for (int i = 0; i < numIters; ++i) {
-    newOrder(buf, "TWTR", i & 0xff, (i & 0xfff) + 1);
-    asm volatile("" : : "r,m"(buf) : "memory");
-  }
-  auto nsTaken = timestamp() - begin;
-  cout << numIters << " orders in " << nsTaken << "ns" << endl;
-  cout << (double)nsTaken / numIters << "ns / order" << endl;
+  bench::measure(100'000'000, [&](long long i) {
+    newOrder(buf, "TWTR", static_cast<int>(i & 0xff),
+             static_cast<int>((i & 0xfff) + 1));
+    bench::do_not_optimize(buf);
+  });
   return 0;
 }

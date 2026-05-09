@@ -73,31 +73,31 @@ void newOrder(char *buf, const char *stock,
       <tbody>
         <tr>
           <td><code>stringstream</code></td>
-          <td>~290</td>
+          <td>~390</td>
         </tr>
         <tr>
           <td><code>sprintf</code></td>
-          <td>~110</td>
+          <td>~175</td>
         </tr>
         <tr>
           <td><code>std::format</code></td>
-          <td>~150</td>
+          <td>~200</td>
         </tr>
         <tr>
           <td><code>std::format_to</code></td>
-          <td>~130</td>
+          <td>~200</td>
         </tr>
         <tr>
           <td><code>fmt::format_to</code></td>
-          <td>~80</td>
+          <td>~127</td>
         </tr>
         <tr>
           <td>custom <code>Format</code></td>
-          <td>~16</td>
+          <td>~51</td>
         </tr>
         <tr>
           <td>"best"</td>
-          <td>~7</td>
+          <td>~52</td>
         </tr>
       </tbody>
     </table>
@@ -116,10 +116,10 @@ void newOrder(char *buf, const char *stock,
     <aside class="notes">
       Surprised me on the std::format result - I'd assumed it would be close to custom-Format
       because libstdc++ uses similar two-digit tricks. The integer formatting kernel <em>is</em>
-      fast; the iterator/sink machinery wrapped around it isn't. fmtlib (the upstream) does the
-      same job with less plumbing overhead and lands roughly halfway between sprintf and the
-      custom Format. The 25k asm lines are everything inlined in CE - most of it is cold paths
-      for non-integer types - but it's a useful signal of how much template machinery is in flight.
+      fast; the iterator/sink machinery wrapped around it isn't. fmtlib (the upstream) does the same
+      job with less plumbing overhead and lands roughly halfway between sprintf and the custom
+      Format. The 25k asm lines are everything inlined in CE - most of it is cold paths for
+      non-integer types - but it's a useful signal of how much template machinery is in flight.
     </aside>
   </section>
 </section>

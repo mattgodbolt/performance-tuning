@@ -1,20 +1,10 @@
-#include <cstdint>
-#include <ctime>
 #include <iostream>
 #include <sstream>
 #include <string>
 
+#include "bench.hpp"
+
 using namespace std;
-
-typedef uint64_t tstamp_t;
-
-static inline tstamp_t timestamp() {
-  struct timespec tp;
-  clock_gettime(CLOCK_MONOTONIC, &tp);
-  uint64_t nanos = 1000000000;
-  nanos *= tp.tv_sec;
-  return nanos + tp.tv_nsec;
-}
 
 string newOrder(string id, int price, int quantity) {
   stringstream s;
@@ -23,14 +13,11 @@ string newOrder(string id, int price, int quantity) {
 }
 
 int main(int, const char **) {
-  constexpr auto numIters = 100000000;
-  newOrder("TWTR", 0, 0);
-  auto begin = timestamp();
-  for (int i = 0; i < numIters; ++i) {
-    newOrder("TWTR", i & 0xff, (i & 0xfff) + 1);
-  }
-  auto nsTaken = timestamp() - begin;
-  cout << numIters << " orders in " << nsTaken << "ns" << endl;
-  cout << (double)nsTaken / numIters << "ns / order" << endl;
+  newOrder("TWTR", 0, 0); // warm up locale init etc.
+  bench::measure(100'000'000, [](long long i) {
+    auto s = newOrder("TWTR", static_cast<int>(i & 0xff),
+                      static_cast<int>((i & 0xfff) + 1));
+    bench::do_not_optimize(s);
+  });
   return 0;
 }

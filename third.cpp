@@ -1,12 +1,10 @@
 #include <cstdint>
 #include <cstring>
-#include <ctime>
 #include <iostream>
-#include <string>
+
+#include "bench.hpp"
 
 using namespace std;
-
-typedef uint64_t tstamp_t;
 
 class Format {
   char _buffer[2048];
@@ -46,14 +44,6 @@ public:
   }
 };
 
-static inline tstamp_t timestamp() {
-  struct timespec tp;
-  clock_gettime(CLOCK_MONOTONIC, &tp);
-  uint64_t nanos = 1000000000;
-  nanos *= tp.tv_sec;
-  return nanos + tp.tv_nsec;
-}
-
 void newOrder(Format &format, const char *id, int price, int quantity) {
   format.append("NEW ");
   format.append(id);
@@ -65,7 +55,6 @@ void newOrder(Format &format, const char *id, int price, int quantity) {
 }
 
 int main(int, const char **) {
-  constexpr auto numIters = 100000000;
   Format buf;
   newOrder(buf, "TWTR", 0, 1);
   if (strcmp(buf.c_str(), "NEW TWTR 0 1")) {
@@ -78,13 +67,11 @@ int main(int, const char **) {
     cout << buf.c_str() << endl;
     return 1;
   }
-  auto begin = timestamp();
-  for (int i = 0; i < numIters; ++i) {
+  bench::measure(100'000'000, [&](long long i) {
     buf.reset();
-    newOrder(buf, "TWTR", i & 0xff, (i & 0xfff) + 1);
-  }
-  auto nsTaken = timestamp() - begin;
-  cout << numIters << " orders in " << nsTaken << "ns" << endl;
-  cout << (double)nsTaken / numIters << "ns / order" << endl;
+    newOrder(buf, "TWTR", static_cast<int>(i & 0xff),
+             static_cast<int>((i & 0xfff) + 1));
+    bench::do_not_optimize(buf);
+  });
   return 0;
 }

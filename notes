@@ -158,3 +158,42 @@ Notes:
 
 Slide numbers refreshed against GCC 16.1.0 (Take One 290, Two 110,
 Three 16, Going Further 7).
+
+----
+
+Honest benchmarks (May 2026) - bench.hpp harness with do_not_optimize
+
+Refactored first..eighth onto a shared bench.hpp (steady_clock,
+do_not_optimize, clobber_memory, lifted from
+../its-about-time/benchmarks/harness.hpp). Adding the do_not_optimize
+barrier around the formatted buffer at the end of each iteration
+exposed substantial dead-code elimination in third/fourth/fifth -
+the compiler had been proving the per-iteration writes were unread
+and skipping much of the work.
+
+GCC 16.1.0 -O2, taskset -c 3, median of 5:
+
+  bench    pre-DCE-fix    honest    delta
+  first         ~290        ~390     +100 ns  (mostly noise band)
+  second        ~110        ~175     +65 ns
+  third          ~16         ~51    -reality bites-
+  fourth         ~24         ~58
+  fifth (best)    ~7         ~52    biggest correction
+  sixth         ~150        ~200
+  seventh       ~130        ~200
+  eighth         ~80        ~127
+
+The 7 ns "best" was almost entirely an artefact: the compiler
+realised buf was overwritten next iteration and never observed, so
+it elided most of the inner work.
+
+Talk takeaways:
+* Custom Format vs Take Two collapses from 7x to ~3.4x faster.
+* "Going Further" / fifth no longer beats third meaningfully (52
+  vs 51 ns) - the log10/numDigits trick still matters but the
+  margin is tiny. Whether to keep that section is a judgement call.
+* Excellent live demo of why benchmark methodology matters - this
+  is exactly the topic of ../its-about-time.
+
+Slide numbers refreshed again (Take One 390, Two 175, Three 51,
+Going Further 52, plus bonus table).
