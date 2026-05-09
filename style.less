@@ -152,15 +152,29 @@
   text-align: left;
 }
 
-// Talk-specific: FIX protocol message colouring
-.soh {
-  color: rgba(27, 145, 255);
-}
+// Talk-specific: FIX protocol message rendering.
+// Custom elements <k>, <v>, <soh> keep the markup tiny and put the rendering
+// (colours, the SOH glyph, the wrap-after-SOH break opportunity) in CSS.
+.reveal .fix-msg {
+  font-family: "IBM Plex Mono", monospace;
+  text-align: left;
+  overflow-wrap: anywhere;
 
-.fix-key {
-  color: #118626;
-}
-
-.fix-value {
-  color: #7e7b7b;
+  k {
+    color: #118626;
+  }
+  v {
+    color: #7e7b7b;
+  }
+  soh {
+    color: rgba(27, 145, 255);
+    &::before {
+      content: "␁";
+    }
+    // Zero-width space after the glyph: invisible, but a valid line-break
+    // opportunity so the browser prefers to wrap at SOH boundaries.
+    &::after {
+      content: "\200B";
+    }
+  }
 }
