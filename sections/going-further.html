@@ -5,7 +5,7 @@
       <li>Do two digits at a time <code>table[x % 100]; x/= 100;</code></li>
       <li class="fragment">
         Number of digits in result, N is <code>1 + log₁₀(x)</code>:
-        <pre class="fragment" style="margin-top: 0.5em;"><code data-trim data-noescape>
+        <pre class="fragment" style="margin-top: 0.5em"><code data-trim data-noescape>
           log₂(x) ~= 31 - clz(x)
           log₁₀(x) = log₂(x) * (ln(2)/ln(10))
           ln(2)/ln(10) ~= 0.30103 ~= 1233/4096

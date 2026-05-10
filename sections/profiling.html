@@ -59,9 +59,7 @@ has_facet(const locale&amp; __loc) {
   </section>
   <section>
     <h2>Fixed in GCC 13!</h2>
-    <p>
-      <code>dynamic_cast</code> &rarr; <code>static_cast</code> short-circuit
-    </p>
+    <p><code>dynamic_cast</code> &rarr; <code>static_cast</code> short-circuit</p>
     <pre><code class="language-cpp" data-trim>
 #define _GLIBCXX_STD_FACET(...) \
   if constexpr (__is_same(const _Facet, const __VA_ARGS__)) \
