@@ -1,55 +1,34 @@
 # Performance-tuning talk benchmarks.
 #
-# Most binaries are built with a single modern toolchain ($(MODERN_CXX)) for
-# apples-to-apples ratios. 'first' (Take One) is the exception: it's the
-# binary we 'perf record', and the dynamic_cast hot path the slide investigates
-# only exists in libstdc++ < 13 - so it's built with GCC 12 and statically
-# links its own libstdc++. The other 'first-*' variants exist as off-stage
-# references for the speaker (and curious audience members) - see the notes
-# file for the 2x2 numbers.
+# 'first' (Take One) is the binary we 'perf record' - the slide wants the
+# original "20%+ __dynamic_cast" row at the top, which requires GCC <= 11
+# (later versions inline or replace it). Built with GCC 11 + -static-libstdc++
+# so the pre-fix code actually runs. Everything else uses GCC 16.
 
-all: first first-fixed first-dyn first-modern \
-     second third fourth fifth sixth seventh eighth
+all: first first-modern second third fourth fifth sixth seventh eighth
 
 CXXFLAGS = -std=c++23 -O2 -ggdb3 -Wall -Wextra -Werror
 
-# Both fall back to $(CXX) if the targeted CE compiler isn't installed.
-GCC12 := /opt/compiler-explorer/gcc-12.5.0/bin/g++
-GCC16 := /opt/compiler-explorer/gcc-16.1.0/bin/g++
-PRE_FIX_CXX  := $(if $(wildcard $(GCC12)),$(GCC12),$(CXX))
-MODERN_CXX   := $(if $(wildcard $(GCC16)),$(GCC16),$(CXX))
+PRE_FIX_CXX := /opt/compiler-explorer/gcc-11.4.0/bin/g++
+MODERN_CXX  := /opt/compiler-explorer/gcc-16.1.0/bin/g++
 
-STATIC_FLAGS := -static-libstdc++ -static-libgcc
-
-.PHONY: clean first first-fixed first-dyn first-modern \
-        second third fourth fifth sixth seventh eighth
+.PHONY: clean first first-modern second third fourth fifth sixth seventh eighth
 
 clean:
 	rm -rf bin
 
-# --- the Take One matrix ---
-
 first: bin/first
 bin/first: first.cpp bench.hpp
 	@mkdir -p bin
-	$(PRE_FIX_CXX) $(CXXFLAGS) $(STATIC_FLAGS) first.cpp -o bin/first
+	$(PRE_FIX_CXX) $(CXXFLAGS) -static-libstdc++ -static-libgcc \
+		first.cpp -o bin/first
 
-first-fixed: bin/first-fixed
-bin/first-fixed: first.cpp bench.hpp
-	@mkdir -p bin
-	$(MODERN_CXX) $(CXXFLAGS) $(STATIC_FLAGS) first.cpp -o bin/first-fixed
-
-first-dyn: bin/first-dyn
-bin/first-dyn: first.cpp bench.hpp
-	@mkdir -p bin
-	$(PRE_FIX_CXX) $(CXXFLAGS) first.cpp -o bin/first-dyn
-
+# Take One rebuilt with the modern toolchain - off-stage reference for
+# "what does this look like once libstdc++ has the GCC 13 fix?"
 first-modern: bin/first-modern
 bin/first-modern: first.cpp bench.hpp
 	@mkdir -p bin
 	$(MODERN_CXX) $(CXXFLAGS) first.cpp -o bin/first-modern
-
-# --- the rest: modern toolchain throughout ---
 
 second: bin/second
 bin/second: second.cpp bench.hpp

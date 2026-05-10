@@ -3,22 +3,16 @@
     <h2>Profile</h2>
     <pre><code class="language-bash">$ perf record ./app
 $ perf report</code></pre>
-    <pre class="fragment"><code class="language-plaintext">10.33%  __ostream_insert
- 7.36%  basic_streambuf::xsputn
- 6.68%  ostream::_M_insert&lt;long>
- 6.47%  newOrder
- 4.95%  num_put::_M_insert_int
- 4.53%  basic_stringbuf::overflow
- 3.78%  basic_ios::_M_cache_locale
- 3.16%  __int_to_char
- 2.61%  use_facet&lt;num_get>
- 2.18%  use_facet&lt;ctype>
- 2.11%  use_facet&lt;num_put></code></pre>
-    <aside class="notes">
-      Modern toolchains inline the dynamic_cast into use_facet/has_facet, so it doesn't show up
-      as a single 26% __dynamic_cast row anymore - it's spread across _M_cache_locale (3.8%) +
-      use_facet&lt;num_get/ctype/num_put> (~7% combined). Same root cause, just smeared.
-    </aside>
+    <pre class="fragment"><code class="language-plaintext">20.64%  __dynamic_cast
+ 6.17%  __cxxabiv1::__si_class_type_info::__do_dyncast
+ 5.78%  __ostream_insert
+ 4.96%  __cxxabiv1::__vmi_class_type_info::__do_dyncast
+ 4.33%  __strcmp_avx2
+ 3.69%  ostream::_M_insert&lt;long>
+ 3.51%  basic_streambuf::xsputn
+ 3.10%  newOrder
+ 2.87%  std::locale::id::_M_id
+ 2.84%  num_put::_M_insert_int</code></pre>
   </section>
   <section>
     <h2>Dynamic cast?</h2>
@@ -80,7 +74,7 @@ has_facet(const locale&amp; __loc) {
     </p>
   </section>
   <section>
-    <h2>Profile - today</h2>
+    <h2>Profile - today (GCC 16)</h2>
     <pre><code class="language-plaintext">11.97%  __ostream_insert
  8.75%  basic_streambuf::xsputn
  7.27%  newOrder
@@ -89,12 +83,25 @@ has_facet(const locale&amp; __loc) {
  4.92%  basic_ios::_M_cache_locale
  4.43%  basic_stringbuf::overflow
  3.89%  __int_to_char</code></pre>
-    <p class="fragment">No more <code>use_facet</code> / <code>has_facet</code>!</p>
-    <p class="fragment">~580ns &rarr; ~510ns &nbsp;(<em>~13% faster</em>)</p>
+    <p class="fragment">
+      No more <code>__dynamic_cast</code>, no more <code>has_facet</code>!
+    </p>
+    <p class="fragment">~1040ns &rarr; ~640ns &nbsp;(<em>~1.6&times; faster</em>)</p>
+  </section>
+
+  <section>
+    <h2>Lesson</h2>
+    <ul>
+      <li class="fragment">
+        Weird stuff happens deep inside <code>libstdc++</code> - and gets quietly fixed
+      </li>
+      <li class="fragment">Profiling reveals what code <em>actually</em> runs, not what you wrote</li>
+      <li class="fragment"><strong>TL;DR: use the newest compiler you can</strong></li>
+      <li class="fragment">(rest of this talk: GCC 16)</li>
+    </ul>
     <aside class="notes">
-      The GCC 13 fix saves ~13% wall-clock on this benchmark - real, but not the headline win the
-      original 2015-era profile suggested. Allocation/string-copy dominate now. The full 2x2
-      (GCC 12/16 x static/dynamic) is in notes if anyone digs in.
+      Don't dwell - this is the bridge. The talk now shifts: we're back on a modern toolchain for
+      everything that follows.
     </aside>
   </section>
 </section>

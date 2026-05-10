@@ -32,7 +32,8 @@ void measure(long long iters, Fn &&fn) {
   const auto ns =
       std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
   std::cout << iters << " orders in " << ns << "ns" << std::endl;
-  std::cout << static_cast<double>(ns) / static_cast<double>(iters) << "ns / order" << std::endl;
+  std::cout << static_cast<double>(ns) / static_cast<double>(iters)
+            << "ns / order" << std::endl;
 }
 
 } // namespace bench
