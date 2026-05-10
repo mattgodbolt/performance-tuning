@@ -197,3 +197,44 @@ Talk takeaways:
 
 Slide numbers refreshed again (Take One 390, Two 175, Three 51,
 Going Further 52, plus bonus table).
+
+----
+
+CPU-pinned bench (May 2026), 1.8GHz, governor=performance, no_turbo=1,
+taskset -c 3, 10M iters, median of 5. Spreads <10%.
+
+  bin/first         (Take One, GCC 12 static)     ~580 ns
+  bin/first-modern  (Take One, GCC 16 dyn)        ~665 ns  *
+  bin/second        (Take Two, sprintf)           ~270 ns
+  bin/third         (Take Three, custom Format)    ~80 ns
+  bin/fourth                                       ~98 ns
+  bin/fifth         (Going Further)                ~76 ns
+  bin/sixth         (std::format)                 ~310 ns
+  bin/seventh       (std::format_to)              ~310 ns
+  bin/eighth        (fmt::format_to)              ~210 ns
+
+* first-modern is *slower* than first despite the GCC 13 dynamic_cast
+  fix - PLT/GOT indirection through the system libstdc++.so apparently
+  costs more per stringstream construction than the dynamic_cast did.
+  Static linking the (buggy) GCC 12 libstdc++ wins. Worth a sentence
+  in the talk if it comes up.
+
+Speedup math (slide-quoted ratios):
+  Take Two vs Take One:       580/270 = 2.15  -> "~2.2x faster"
+  Take Three vs Take One:      580/80 = 7.25  -> "~7x faster"
+  Take Three vs Take Two:      270/80 = 3.38  -> "~3.3x faster"
+  Going Further vs Take Three:  80/76 = 1.05  -> "~few % over Take Three"
+  fmt::format_to vs sprintf:   270/210 = 1.29 -> "~25% faster"
+  custom Format vs fmt::format_to: 210/80 = 2.6 -> "for the last 2.5x"
+
+The talk's narrative ("custom format big win, going-further marginal")
+holds. The 4x->27x->etc claims of the original 2015 talk no longer
+match modern allocator/string-copy costs - even Take One is only
+2x slower than sprintf now, not 4x.
+
+All slides updated to match these numbers.
+
+Toolchain layout in Makefile:
+  - bin/first              -> GCC 12 (perf-able with __dynamic_cast)
+  - bin/first-modern       -> GCC 16 (research only)
+  - everything else        -> GCC 16 (apples-to-apples)

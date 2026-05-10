@@ -73,31 +73,31 @@ void newOrder(char *buf, const char *stock,
       <tbody>
         <tr>
           <td><code>stringstream</code></td>
-          <td>~390</td>
+          <td>~580</td>
         </tr>
         <tr>
           <td><code>sprintf</code></td>
-          <td>~175</td>
+          <td>~270</td>
         </tr>
         <tr>
           <td><code>std::format</code></td>
-          <td>~200</td>
+          <td>~310</td>
         </tr>
         <tr>
           <td><code>std::format_to</code></td>
-          <td>~200</td>
+          <td>~310</td>
         </tr>
         <tr>
           <td><code>fmt::format_to</code></td>
-          <td>~127</td>
+          <td>~210</td>
         </tr>
         <tr>
           <td>custom <code>Format</code></td>
-          <td>~51</td>
+          <td>~80</td>
         </tr>
         <tr>
           <td>"best"</td>
-          <td>~52</td>
+          <td>~76</td>
         </tr>
       </tbody>
     </table>
@@ -106,12 +106,13 @@ void newOrder(char *buf, const char *stock,
         <code>std::format</code> ≈ <code>sprintf</code> - type-safe, <em>not</em> faster
       </li>
       <li class="fragment">
-        <code>fmt::format_to</code> beats both - same API, different implementation
+        <code>fmt::format_to</code> ~25% faster than <code>sprintf</code> - same API, different
+        implementation
       </li>
       <li class="fragment">
         Asm: <code>sprintf</code> → ~9 lines · <code>std::format</code> → ~25k lines
       </li>
-      <li class="fragment">For the last 10&times;, the custom <code>Format</code> still wins</li>
+      <li class="fragment">For the last 2.5&times;, the custom <code>Format</code> still wins</li>
     </ul>
     <aside class="notes">
       Surprised me on the std::format result - I'd assumed it would be close to custom-Format

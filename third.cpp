@@ -67,7 +67,7 @@ int main(int, const char **) {
     cout << buf.c_str() << endl;
     return 1;
   }
-  bench::measure(100'000'000, [&](long long i) {
+  bench::measure(10'000'000, [&](long long i) {
     buf.reset();
     newOrder(buf, "TWTR", static_cast<int>(i & 0xff),
              static_cast<int>((i & 0xfff) + 1));

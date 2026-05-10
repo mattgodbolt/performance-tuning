@@ -130,6 +130,9 @@
   box-shadow: none;
   text-align: left;
   position: relative;
+  /* .reveal sets a sans-serif font; the user-agent's pre { font-family: monospace }
+     loses to inheritance from .reveal, so re-assert mono here for bare <pre>. */
+  font-family: "IBM Plex Mono", monospace;
 }
 
 .reveal pre code {
