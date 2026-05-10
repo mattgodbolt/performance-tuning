@@ -60,18 +60,13 @@ has_facet(const locale&amp; __loc) {
   <section>
     <h2>Fixed in GCC 13!</h2>
     <p>
-      Jonathan Wakely (libstdc++/PR103755, Nov 2022) replaced
-      <code>dynamic_cast</code> with a compile-time <code>static_cast</code> short-circuit for all
-      standard facets:
+      <code>dynamic_cast</code> &rarr; <code>static_cast</code> short-circuit
     </p>
     <pre><code class="language-cpp" data-trim>
 #define _GLIBCXX_STD_FACET(...) \
   if constexpr (__is_same(const _Facet, const __VA_ARGS__)) \
     return static_cast&lt;const _Facet*>(__facets[__i])
     </code></pre>
-    <p class="fragment">
-      The <code>dynamic_cast</code> fallback only remains for user-defined custom facets.
-    </p>
   </section>
   <section>
     <h2>Profile - today (GCC 16)</h2>
@@ -83,21 +78,14 @@ has_facet(const locale&amp; __loc) {
  4.92%  basic_ios::_M_cache_locale
  4.43%  basic_stringbuf::overflow
  3.89%  __int_to_char</code></pre>
-    <p class="fragment">
-      No more <code>__dynamic_cast</code>, no more <code>has_facet</code>!
-    </p>
-    <p class="fragment">~1040ns &rarr; ~640ns &nbsp;(<em>~1.6&times; faster</em>)</p>
+    <p>~1040ns &rarr; ~640ns &nbsp;(<em>~1.6&times; faster</em>)</p>
   </section>
 
   <section>
     <h2>Lesson</h2>
     <ul>
-      <li class="fragment">
-        Weird stuff happens deep inside <code>libstdc++</code> - and gets quietly fixed
-      </li>
-      <li class="fragment">Profiling reveals what code <em>actually</em> runs, not what you wrote</li>
-      <li class="fragment"><strong>TL;DR: use the newest compiler you can</strong></li>
-      <li class="fragment">(rest of this talk: GCC 16)</li>
+      <li><strong>Use the newest compiler you can</strong></li>
+      <li>(GCC 16 for the rest of this talk)</li>
     </ul>
     <aside class="notes">
       Don't dwell - this is the bridge. The talk now shifts: we're back on a modern toolchain for
